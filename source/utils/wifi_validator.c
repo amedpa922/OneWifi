@@ -1663,15 +1663,19 @@ int validate_vap(const cJSON *vap, wifi_vap_info_t *vap_info, wifi_platform_prop
 int validate_wifi_global_config(const cJSON *global_cfg, wifi_global_param_t *global_info, pErr execRetVal)
 {
     if(!global_cfg || !execRetVal){
-        wifi_util_dbg_print(WIFI_PASSPOINT,"wifi global entry is NULL\n");
+        wifi_util_dbg_print(WIFI_PASSPOINT,"AISH: wifi global entry is NULL\n");
         return RETURN_ERR;
     }
-
+    wifi_util_dbg_print(WIFI_PASSPOINT,"AISH: wifi global entry is NULL\n");
     const cJSON  *param;
 	
     // NotifyWifiChanges
     validate_param_bool(global_cfg, "NotifyWifiChanges", param);
     global_info->notify_wifi_changes = (param->type & cJSON_True) ? true:false;
+    
+    //AISH
+    validate_param_bool(global_cfg, "my_test_parameter", param);
+    global_info->my_test_parameter = (param->type & cJSON_True) ? true:false;
 
     // PreferPrivate
     validate_param_bool(global_cfg, "PreferPrivate", param);
