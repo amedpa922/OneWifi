@@ -2400,6 +2400,17 @@ webconfig_error_t decode_wifi_global_config(const cJSON *global_cfg, wifi_global
     //FixedWmmParams
     decode_param_integer(global_cfg, "FixedWmmParams", param);
     global_info->fixed_wmm_params = param->valuedouble;
+    
+    //TestParameter
+    decode_param_bool(global_cfg, "TestParameter", param);
+    if (param != NULL) {
+        global_info->test_parameter = (param->type & cJSON_True) ? true : false;
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter decoded: %s\n", __func__, __LINE__,
+                           global_info->test_parameter ? "true" : "false");
+    } else {
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter decode failed - param is NULL\n", __func__, __LINE__);
+        global_info->test_parameter = false;
+    }
 
     // MgtFrameRateLimitEnable
     decode_param_bool(global_cfg, "MgtFrameRateLimitEnable", param);

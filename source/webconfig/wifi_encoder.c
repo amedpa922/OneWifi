@@ -806,6 +806,15 @@ webconfig_error_t encode_wifi_global_config(const wifi_global_param_t *global_in
     //TxRxRateList
     cJSON_AddStringToObject(global_obj, "TxRxRateList", global_info->txrx_rate_list);
 
+    // TestParameter
+    if (global_obj != NULL && global_info != NULL) {
+        cJSON_AddBoolToObject(global_obj, "TestParameter", global_info->test_parameter);
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter encoded: %s\n", __func__, __LINE__,
+                           global_info->test_parameter ? "true" : "false");
+    } else {
+        wifi_util_dbg_print(WIFI_DMCLI, "%s:%d unique123 TestParameter encode failed - NULL pointer\n", __func__, __LINE__);
+    }
+
     // MgtFrameRateLimitEnable
     cJSON_AddBoolToObject(global_obj, "MgtFrameRateLimitEnable",
         global_info->mgt_frame_rate_limit_enable);
