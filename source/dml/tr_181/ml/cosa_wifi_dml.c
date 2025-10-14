@@ -5683,6 +5683,7 @@ SSID_GetParamStringValue
     {
         /* collect value */
         char ssid[128] = {0};
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_get_default_ssid() API 2.\n",__FUNCTION__);
         if (wifi_hal_get_default_ssid(ssid, pcfg->vap_index) == RETURN_OK) {
             AnscCopyString(pValue, ssid);
             return 0;
@@ -8546,7 +8547,7 @@ Security_GetParamStringValue
     if( AnscEqualString(ParamName, "X_COMCAST-COM_DefaultKeyPassphrase", TRUE))
     {
         char password[128] = {0};
-
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_get_default_keypassphrase() API 3.\n",__FUNCTION__);
         if (wifi_hal_get_default_keypassphrase(password, vap_index) == RETURN_OK)
         {
             if ( AnscSizeOfString(password) > 0 )

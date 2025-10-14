@@ -101,7 +101,7 @@ int init_wifi_hal()
 {
     int ret = RETURN_OK;
 
-    wifi_util_info_print(WIFI_CTRL,"%s: start wifi hal init\n",__FUNCTION__);
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST: start wifi hal init\n",__FUNCTION__);
 
     ret = wifi_hal_init();
     if (ret != RETURN_OK) {
@@ -110,6 +110,7 @@ int init_wifi_hal()
     }
 
     /* Get the wifi capabilities from from hal*/
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST: calling wifi_hal_getHalCapability() API.\n",__FUNCTION__);
     ret = wifi_hal_getHalCapability(&g_wifi_mgr.hal_cap);
     wifi_util_dbg_print(WIFI_MGR,"%s():%d: return:%d from wifi_hal_getHalCapability.\n", __func__, __LINE__, ret);
 

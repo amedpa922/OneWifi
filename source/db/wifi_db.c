@@ -347,6 +347,7 @@ static int init_vap_config_default(int vap_index, wifi_vap_info_t *config,
             strcpy(cfg.u.sta_info.ssid, vap_name);
         }
         memset(password, 0, sizeof(password));
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_get_default_keypassphrase() API 2.\n",__FUNCTION__);
         if (wifi_hal_get_default_keypassphrase(password,vap_index) == 0) {
             strcpy(cfg.u.sta_info.security.u.key.key, password);
         } else {
@@ -521,6 +522,7 @@ static int init_vap_config_default(int vap_index, wifi_vap_info_t *config,
         }
 
         memset(password, 0, sizeof(password));
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_get_default_keypassphrase() API 1.\n",__FUNCTION__);
         if (wifi_hal_get_default_keypassphrase(password,vap_index) == 0) {
             strcpy(cfg.u.bss_info.security.u.key.key, password);
         } else {

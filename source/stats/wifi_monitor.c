@@ -3548,9 +3548,12 @@ int init_wifi_monitor()
     g_monitor_module.exit_monitor = false;
     /* Initializing the lock for active measurement g_active_msmt.lock */
 
+    wifi_util_dbg_print(WIFI_MON, "%s:%d : HAL_API_TEST: calling wifi_hal_newApAssociatedDevice_callback_register() API.\n", __func__, __LINE__);
     wifi_hal_newApAssociatedDevice_callback_register(device_associated);
     wifi_vapstatus_callback_register(vapstatus_callback);
+    wifi_util_dbg_print(WIFI_MON, "%s:%d : HAL_API_TEST: calling wifi_hal_apDeAuthEvent_callback_register() API.\n", __func__, __LINE__);
     wifi_hal_apDeAuthEvent_callback_register(device_deauthenticated);
+    wifi_util_dbg_print(WIFI_MON, "%s:%d : HAL_API_TEST: calling wifi_hal_apDisassociatedDevice_callback_register() API.\n", __func__, __LINE__);
     wifi_hal_apDisassociatedDevice_callback_register(device_disassociated);
     wifi_hal_ap_max_client_rejection_callback_register(device_max_client_rejection);
     wifi_hal_radius_eap_failure_callback_register(radius_eap_failure_callback);

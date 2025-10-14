@@ -1945,7 +1945,7 @@ int webconfig_hal_radio_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_data_t
                     __func__, __LINE__, radio_data->name);
                 return RETURN_ERR;
             }
-
+            wifi_util_info_print(WIFI_MGR,"%s: HAL_API_TEST:calling wifi_hal_setRadioOperatingParametersr() API 5.\n",__FUNCTION__);
             ret = wifi_hal_setRadioOperatingParameters(mgr_radio_data->vaps.radio_index, &radio_data->oper);
 
             if (ret != RETURN_OK) {
@@ -2120,7 +2120,7 @@ int webconfig_hal_single_radio_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded
                 __LINE__, radio_data->name);
             return RETURN_ERR;
         }
-
+        wifi_util_info_print(WIFI_MGR,"%s: HAL_API_TEST:calling wifi_hal_setRadioOperatingParametersr() API 6.\n",__FUNCTION__);
         ret = wifi_hal_setRadioOperatingParameters(mgr_radio_data->vaps.radio_index,
             &radio_data->oper);
 

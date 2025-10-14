@@ -2137,7 +2137,7 @@ bool ssid_get_param_string_value(void *obj_ins_context, char *param_name, scratc
         set_output_string(output_value, buff);
     } else if (STR_CMP(param_name, "X_COMCAST-COM_DefaultSSID")) {
         char temp_ssid[64] = {0};
-
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_get_default_ssid() API 1.\n",__FUNCTION__);
         if (wifi_hal_get_default_ssid(temp_ssid, pcfg->vap_index) == RETURN_OK) {
             set_output_string(output_value, temp_ssid);
         }
@@ -2531,7 +2531,7 @@ bool security_get_param_string_value(void *obj_ins_context, char *param_name, sc
         set_output_string(output_value, " ");
     } else if (STR_CMP(param_name, "X_COMCAST-COM_DefaultKeyPassphrase")) {
         char default_password[64] = { 0 };
-
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_get_default_keypassphrase() API 5.\n",__FUNCTION__);
         if (wifi_hal_get_default_keypassphrase(default_password, vap_index) == RETURN_OK) {
             set_output_string(output_value, default_password);
 	} else {

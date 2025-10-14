@@ -141,6 +141,7 @@ int vap_svc_private_update(vap_svc_t *svc, unsigned int radio_index, wifi_vap_in
 #endif /* !defined(_PP203X_PRODUCT_REQ_) && !defined(_GREXT02ACTS_PRODUCT_REQ_) */
         p_tgt_vap_map->vap_array[0].u.bss_info.enabled &= rdk_vap_info[i].exists;
 
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST: calling wifi_hal_createVAP() API.",__FUNCTION__);
         ret = wifi_hal_createVAP(radio_index, p_tgt_vap_map);
         if (ret != RETURN_OK) {
             wifi_util_error_print(WIFI_CTRL,"%s: wifi vap create failure: radio_index:%d vap_index:%d\n",__FUNCTION__,

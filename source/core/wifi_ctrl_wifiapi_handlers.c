@@ -766,6 +766,7 @@ void process_wifiapi_command(char *command, unsigned int len)
         }
         //validation and check for changes?
         //call hal_api
+        sprintf(buff, "HAL_API_TEST: calling wifi_hal_setRadioOperatingParameters() API. 7");
         ret = wifi_hal_setRadioOperatingParameters(radio_index, &(data.u.decoded.radios[radio_index].oper));
         if (ret != RETURN_OK) {
             sprintf(buff, "%s: wifi_hal_setRadioOperatingParameters failed", args[0]);
@@ -846,6 +847,7 @@ void process_wifiapi_command(char *command, unsigned int len)
             goto publish;
         }
         //call hal_api
+        sprintf(buff, "HAL_API_TEST: calling wifi_hal_createVAP() API.");
         if (wifi_hal_createVAP(radio_index, vap_map) != RETURN_OK) {
             sprintf(buff, "%s: wifi_hal_createVAP failed", args[0]);
             goto publish;
@@ -900,12 +902,14 @@ void process_wifiapi_command(char *command, unsigned int len)
             sprintf(bss.ssid, "%s", args[3]);
             bss.freq = strtol(args[4], NULL, 10);
             //call hal api
+            sprintf(buff, "HAL_API_TEST: calling wifi_hal_connect() API 1.",);
             if (wifi_hal_connect(vap_index, &bss) != RETURN_OK) {
                 sprintf(buff, "%s: wifi_hal_connect failed", args[0]);
                 goto publish;
             }
         } else {
             //call hal api
+            sprintf(buff, "HAL_API_TEST: calling wifi_hal_connect() API 2.",);
             if (wifi_hal_connect(vap_index, NULL) != RETURN_OK) {
                 sprintf(buff, "%s: wifi_hal_connect failed", args[0]);
                 goto publish;
@@ -925,6 +929,7 @@ void process_wifiapi_command(char *command, unsigned int len)
             goto publish;
         }
         //call hal api
+        sprintf(buff, " HAL_API_TEST calling wifi_hal_disconnect() API.");
         if (wifi_hal_disconnect(vap_index) != RETURN_OK) {
             sprintf(buff, "%s: wifi_hal_disconnect failed", args[0]);
             goto publish;
@@ -941,6 +946,7 @@ void process_wifiapi_command(char *command, unsigned int len)
             sprintf(buff, "%s: Invalid radio index (%d)", args[0], radio_index);
             goto publish;
         }
+        sprintf(buff, "HAL_API_TEST: calling wifi_hal_getScanResults() API.");
         if (wifi_hal_getScanResults(radio_index, NULL, &bss, &num_bss) != RETURN_OK) {
             sprintf(buff, "%s: wifi_hal_getScanResults failed", args[0]);
             goto publish;
@@ -955,6 +961,7 @@ void process_wifiapi_command(char *command, unsigned int len)
             sprintf(buff, "%s: Invalid radio index (%d)", args[0], radio_index);
             goto publish;
         }
+        sprintf(buff, "HAL_API_TEST: calling wifi_hal_startScan() API.");
         if (wifi_hal_startScan(radio_index, WIFI_RADIO_SCAN_MODE_ONCHAN, 0, 0, NULL) != RETURN_OK) {
             sprintf(buff, "%s: wifi_hal_startScan failed", args[0]);
             goto publish;

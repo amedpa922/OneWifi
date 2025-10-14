@@ -2260,7 +2260,7 @@ int enable_wifi_radio_ax_mode(unsigned int radio_index, wifi_radio_operationPara
         }
     }
     pthread_mutex_unlock(&g_wifidb->data_cache_lock);
-
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_setRadioOperatingParametersr() API 3.\n",__FUNCTION__);
     ret = wifi_hal_setRadioOperatingParameters(radio_index, radio_params);
     if (ret != RETURN_OK) {
         wifi_util_error_print(WIFI_CTRL,"%s:%d wifi radio[%d] parameter set[%d] failure\n",__func__, __LINE__, radio_index, radio_params->variant);
@@ -2437,6 +2437,7 @@ void process_wps_command_event(unsigned int vap_index)
 {
 #ifdef FEATURE_SUPPORT_WPS
     wifi_util_info_print(WIFI_CTRL,"%s:%d wifi wps test vap index = %d\n",__func__, __LINE__, vap_index);
+    wifi_util_info_print(WIFI_CTRL,"%s:%d :HAL_API_TEST: wifi wps test vap index = %d\n",__func__, __LINE__, vap_index);
     wifi_hal_setApWpsButtonPush(vap_index);
 #endif
 }
@@ -2647,7 +2648,7 @@ static int reset_radio_operating_parameters(void *args)
         wifi_util_error_print(WIFI_CTRL,"%s:%d: wrong index for radio map: %d\n",__FUNCTION__, __LINE__, radio_index);
         return RETURN_ERR;
     }
-
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_setRadioOperatingParametersr() API 4.\n",__FUNCTION__);
     ret = wifi_hal_setRadioOperatingParameters(radio_index, radio_params);
     if (ret != RETURN_OK) {
         wifi_util_error_print(WIFI_CTRL,"%s:%d: wifi radio parameter set failure: radio_index:%d\n",

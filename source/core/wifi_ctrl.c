@@ -105,6 +105,7 @@ static int wifi_radio_set_enable(bool status)
         memcpy(&temp_wifi_radio_oper_param, wifi_radio_oper_param, sizeof(wifi_radio_operationParam_t));
         temp_wifi_radio_oper_param.enable = status;
         wifi_util_dbg_print(WIFI_CTRL,"%s:%d index: %d radio enable status:%d\n", __func__, __LINE__, index, status);
+        wifi_util_dbg_print(WIFI_CTRL,"%s:%d index: %d radio enable status:%d, HAL_API_TEST calling wifi_hal_setRadioOperatingParameters() API.\n", __func__, __LINE__, index, status);
         ret = wifi_hal_setRadioOperatingParameters(index, &temp_wifi_radio_oper_param);
         if (ret != RETURN_OK) {
             wifi_util_error_print(WIFI_CTRL,"%s:%d wifi radio parameter set failure: radio_index:%d\n", __func__, __LINE__, index);
@@ -511,6 +512,7 @@ int start_radios(rdk_dev_mode_type_t mode)
         if ((wifi_radio_oper_param->EcoPowerDown == false) && (wifi_prop->radio_presence[index] == false)) {
             wifi_util_error_print(WIFI_CTRL,"%s: !!!!-ALERT-!!!-Radio not present-!!!-Kernel driver interface down-!!!.Index %d\n",__FUNCTION__, index);
         }
+        wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_setRadioOperatingParameters() API 2.\n",__FUNCTION__);
         ret = wifi_hal_setRadioOperatingParameters(index, wifi_radio_oper_param);
         if (ret != RETURN_OK) {
             wifi_util_error_print(WIFI_CTRL,"%s: wifi radio parameter set failure: radio_index:%d\n",__FUNCTION__, index);
@@ -1360,12 +1362,15 @@ int init_wifi_ctrl(wifi_ctrl_t *ctrl)
     bus_subscribe_events(ctrl);
 
     //Register wifi hal sta connect/disconnect callback
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_staConnectionStatus_callback_register() \n",__FUNCTION__);
     wifi_hal_staConnectionStatus_callback_register(sta_connection_status);
 
     //Register wifi hal scan results callback
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_scanResults_callback_register() \n",__FUNCTION__);
     wifi_hal_scanResults_callback_register(scan_results_callback);
 
     //Register wifi hal frame recv callback
+    wifi_util_info_print(WIFI_CTRL,"%s: HAL_API_TEST:calling wifi_hal_mgmt_frame_callbacks_register() \n",__FUNCTION__);
     wifi_hal_mgmt_frame_callbacks_register(mgmt_wifi_frame_recv);
 
     /* Register wifi hal channel change events callback */
@@ -1667,7 +1672,7 @@ int validate_and_sync_private_vap_credentials()
 
                 if (strncmp(wifi_vap_map->vap_array[i].vap_name, "private_ssid",
                         strlen("private_ssid")) == 0) {
-
+                    wifi_util_info_print(WIFI_CTRL, "HAL_API_TEST: calling wifi_hal_get_default_keypassphrase() API.\n",);
                     wifi_hal_get_default_keypassphrase(default_password,
                         wifi_vap_map->vap_array[i].vap_index);
 
