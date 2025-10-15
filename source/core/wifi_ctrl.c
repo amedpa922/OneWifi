@@ -1672,7 +1672,7 @@ int validate_and_sync_private_vap_credentials()
 
                 if (strncmp(wifi_vap_map->vap_array[i].vap_name, "private_ssid",
                         strlen("private_ssid")) == 0) {
-                    wifi_util_info_print(WIFI_CTRL, "HAL_API_TEST: calling wifi_hal_get_default_keypassphrase() API.\n",);
+                    wifi_util_info_print(WIFI_CTRL, "HAL_API_TEST: calling wifi_hal_get_default_keypassphrase() API.\n");
                     wifi_hal_get_default_keypassphrase(default_password,
                         wifi_vap_map->vap_array[i].vap_index);
 
