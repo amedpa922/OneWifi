@@ -616,27 +616,49 @@ int set_bp_filter(int sockfd,const char *iface_name)
     #define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
     #define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
     #define OP_RET (BPF_RET | BPF_K)
+    /*
     static struct sock_filter bpfcode[4] = {
         { OP_LDH, 0, 0, 12          },  // ldh [12]
         { OP_JEQ, 0, 1, ETH_P_1905  },  // jeq #0x893a, L2, L3
         { OP_RET, 0, 0, 0xffffffff,         },  // ret #0xffffffff
         { OP_RET, 0, 0, 0           },  // ret #0x0
     };
+    
     struct sock_fprog bpf = { 4, bpfcode };
+    */
+    static struct sock_filter bpfcode[] = {
+          //Load EtherType field (offset 12)
+         {  0x30, 0, 0, 0x0000000c },  //BPF_LD  + BPF_H + BPF_AB
+               //Compare with 0x8931
+        {  0x15, 0, 1, 0x0000893A },  //BPF_JEQ + k
+             //Reject packet
+        {  0x6, 0, 0, 0x00000000  },  // BPF_RET + k(0 bytes)
+           // Accept packets
+        {  0x6, 0, 0, 0x00040000  },  // BPF_RET + k(max size)
+    };
+
+    struct sock_fprog bpf = {
+         .len = sizeof(bpfcode) / sizeof(bpfcode[0]),
+         .filter = bpfcode,
+    };
+
     if (setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_FILTER, &bpf, sizeof(bpf))) {
         wifi_util_info_print(WIFI_CTRL,"%s:%d: Error in attaching filter, err:%d\n", __func__, __LINE__, errno);
         close(sockfd);
         return -1;
     }
-
-    memset(&mreq, 0, sizeof(mreq));
-    mreq.mr_ifindex = (int)(if_nametoindex(iface_name));
+    
+    //memset(&mreq, 0, sizeof(mreq));
+    //mreq.mr_ifindex = (int)(if_nametoindex(iface_name));
+    //mreq.mr_type = PACKET_MR_PROMISC;
+    /*
     if (setsockopt(sockfd, SOL_PACKET, PACKET_ADD_MEMBERSHIP, (char *)&mreq, sizeof(mreq))) {
         wifi_util_info_print(WIFI_CTRL,"%s:%d: Error setting promisuous for interface:%s, err:%d\n", __func__, __LINE__,iface_name, errno);
         close(sockfd);
         return -1;
     }
-
+    */
+    wifi_util_info_print(WIFI_CTRL,"%s:%d:  IEEE1905: set_bp_filter done.\n", __func__, __LINE__);
     return 0;
 }
 
