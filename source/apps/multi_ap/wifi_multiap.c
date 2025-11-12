@@ -611,7 +611,7 @@ int send_frame(unsigned char *buff, unsigned int len, bool multicast,  char *ifn
 
 int set_bp_filter(int sockfd,const char *iface_name)
 {
-    struct packet_mreq mreq;
+    //struct packet_mreq mreq;
     #define OP_LDH (BPF_LD  | BPF_H   | BPF_ABS)
     #define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
     #define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
