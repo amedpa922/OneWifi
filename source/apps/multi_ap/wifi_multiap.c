@@ -160,7 +160,7 @@ int get_service_type()
 }
 int multiap_event_exec_start(wifi_app_t *apps, void *arg)
 {
-    wifi_util_info_print(WIFI_APPS, "%s:%d\n", __func__, __LINE__);
+    wifi_util_info_print(WIFI_APPS, "%s:%d IEEE1905: inside multiap_event_exec_start().\n", __func__, __LINE__);
     wifi_ctrl_t *ctrl = NULL;
     ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
     if (ctrl->rf_status_down || (ctrl->network_mode == rdk_dev_mode_type_ext)) {
@@ -496,7 +496,7 @@ int send_frame(unsigned char *buff, unsigned int len, bool multicast,  char *ifn
     // After sending for Autofconfig search for 50 times if no reply is seen then the other device is in extender mode
       apps_mgr_multiap_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_stop, NULL, 0);
 }
-
+/*
 int set_bp_filter(int sockfd,const char *iface_name)
 {
     struct packet_mreq mreq;
@@ -527,10 +527,46 @@ int set_bp_filter(int sockfd,const char *iface_name)
 
     return 0;
 }
+*/
+
+int set_bp_filter(int sockfd,const char *iface_name)
+{
+    struct packet_mreq mreq;
+    #define OP_LDH (BPF_LD  | BPF_H   | BPF_ABS)
+    #define OP_LDB (BPF_LD  | BPF_B   | BPF_ABS)
+    #define OP_JEQ (BPF_JMP | BPF_JEQ | BPF_K)
+    #define OP_RET (BPF_RET | BPF_K)
+    static struct sock_filter bpfcode[4] = {
+           { OP_LDH, 0, 0, 12          },  // ldh [12]
+           { OP_JEQ, 0, 1, ETH_P_1905  },  // jeq #0x893a, L2, L3
+           { OP_RET, 0, 0, 0xffffffff,         },  // ret #0xffffffff
+           { OP_RET, 0, 0, 0           },  // ret #0x0
+    };
+    struct sock_fprog bpf = { 4, bpfcode };
+    ifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Inside set_bp_filter. \n", __func__, __LINE__);
+    if (setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_FILTER, &bpf, sizeof(bpf))) {
+        wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Error in attaching filter, err:%d\n", __func__, __LINE__, errno);
+        close(sockfd);
+        return -1;
+    }
+
+    memset(&mreq, 0, sizeof(mreq));
+    mreq.mr_type = PACKET_MR_PROMISC;
+    mreq.mr_ifindex = (int)(if_nametoindex(iface_name));
+       
+    if (setsockopt(sockfd, SOL_PACKET, PACKET_ADD_MEMBERSHIP, (char *)&mreq, sizeof(mreq))) {
+        wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Error setting promisuous for interface:%s, err:%d\n", __func__, __LINE__,iface_n    ame, errno);
+        close(sockfd);
+        return -1;
+    }
+
+    return 0;
+}
 
 int create_raw_socket(const char *iface_name) {
     int sockfd;
     struct sockaddr_ll sll;
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: Inside create_raw_socket().\n");
     // Create raw socket
     sockfd = socket(AF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
     if (sockfd < 0) {
@@ -548,6 +584,7 @@ int create_raw_socket(const char *iface_name) {
         close(sockfd);
         return -1;
     }
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: Calling set_bp_filter().\n");
     set_bp_filter(sockfd,iface_name);
 
     return sockfd;
@@ -749,6 +786,7 @@ static void *receive_multicast_message(void *ctx)
     int sockets[MAX_IFACES];
     char buffer[BUF_SIZE];
     state = multiap_state_none;
+    wifi_util_info_print(WIFI_CTRL, "IEEE1905: Inside receive_multicast_message().\n");
 
     for (int i = 0; i < MAX_IFACES; ++i) {
         sockets[i] = create_raw_socket(ifaces[i]);
@@ -756,14 +794,14 @@ static void *receive_multicast_message(void *ctx)
              wifi_util_info_print(WIFI_CTRL, "Failed to initialize socket on %s\n", ifaces[i]);
             return NULL;
         }
-        wifi_util_info_print(WIFI_CTRL,"%s:%d sockets[i]= %d\n", __func__, __LINE__,sockets[i]);
+        wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: sockets[%d]= %d\n", __func__, __LINE__,i,sockets[i]);
     }
 
 
     while (1) {
         fd_set readfds;
         FD_ZERO(&readfds);
-
+        wifi_util_info_print(WIFI_CTRL,"IEEE1905: inside while(1).\n");
         int maxfd = -1;
         for (int i = 0; i < MAX_IFACES; i++) {
             FD_SET(sockets[i], &readfds);
@@ -771,10 +809,10 @@ static void *receive_multicast_message(void *ctx)
 
         }
 
-        wifi_util_info_print(WIFI_CTRL,"%s:%d maxfd = %d\n", __func__, __LINE__,maxfd);
+        wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: maxfd = %d\n", __func__, __LINE__,maxfd);
         int ret = select(maxfd + 1, &readfds, NULL, NULL,NULL);
         if (ret < 0) {
-            wifi_util_info_print(WIFI_CTRL,"select error");
+            wifi_util_info_print(WIFI_CTRL,"IEEE1905: select error\n");
             break;
         }
 
@@ -795,7 +833,7 @@ static void *receive_multicast_message(void *ctx)
 
 void receive_multiap_message()
 {
-    wifi_util_info_print(WIFI_CTRL,"receive message \n");
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: receive message. \n");
     int ret;
     pthread_attr_t attr;
     pthread_t  thread_id;
@@ -805,15 +843,15 @@ void receive_multiap_message()
 
     ret = pthread_create(&thread_id, &attr,receive_multicast_message, NULL);
     if (ret != 0){
-        wifi_util_info_print(WIFI_CTRL,"thread was not created successfully \n");
+        wifi_util_info_print(WIFI_CTRL,"IEEE1905: thread was not created successfully \n");
     }
     else 
-        wifi_util_info_print(WIFI_CTRL,"thread was created successfully \n");
-
+        wifi_util_info_print(WIFI_CTRL,"IEEE1905: thread was created successfully \n");
 
 }
  int exec_event_multiap(wifi_app_t *apps, wifi_event_subtype_t sub_type, void *arg)
  {
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: Inside exec_event_multiap().\n");
     switch (sub_type) {
         case wifi_event_exec_start:
             multiap_event_exec_start(apps, arg);
@@ -836,6 +874,7 @@ void receive_multiap_message()
 
 int multiap_event(wifi_app_t *app, wifi_event_t *event)
 {
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: Inside multiap_event().\n");
     switch (event->event_type) {
         case wifi_event_type_webconfig:
             break;
