@@ -472,6 +472,7 @@ int send_frame(unsigned char *buff, unsigned int len, bool multicast,  char *ifn
     unsigned char buff[MAX_BUFF_SZ];
     unsigned int sz;
     int i = 0;
+    wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
     wifi_util_info_print(WIFI_CTRL,"%s:%d: ifname = %s\n",__func__, __LINE__,ifname);
     //state = multiap_state_none;
     if(multiap_service_type_extender == get_service_type() || state != multiap_state_none)
@@ -555,7 +556,7 @@ int set_bp_filter(int sockfd,const char *iface_name)
     mreq.mr_ifindex = (int)(if_nametoindex(iface_name));
        
     if (setsockopt(sockfd, SOL_PACKET, PACKET_ADD_MEMBERSHIP, (char *)&mreq, sizeof(mreq))) {
-        wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Error setting promisuous for interface:%s, err:%d\n", __func__, __LINE__,iface_n    ame, errno);
+        wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Error setting promisuous for interface:%s, err:%d\n", __func__, __LINE__,iface_name, errno);
         close(sockfd);
         return -1;
     }
