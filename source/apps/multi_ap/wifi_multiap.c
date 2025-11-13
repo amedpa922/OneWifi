@@ -544,7 +544,7 @@ int set_bp_filter(int sockfd,const char *iface_name)
            { OP_RET, 0, 0, 0           },  // ret #0x0
     };
     struct sock_fprog bpf = { 4, bpfcode };
-    ifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Inside set_bp_filter. \n", __func__, __LINE__);
+    wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Inside set_bp_filter. \n", __func__, __LINE__);
     if (setsockopt(sockfd, SOL_SOCKET, SO_ATTACH_FILTER, &bpf, sizeof(bpf))) {
         wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: Error in attaching filter, err:%d\n", __func__, __LINE__, errno);
         close(sockfd);
