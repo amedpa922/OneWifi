@@ -732,13 +732,59 @@ int create_autoconfig_resp_msg(unsigned char *buff, unsigned char *dst, char *in
 
 }
 
+void printHexDump(const void *data, size_t size)
+{
+    const unsigned char *bytes = (const unsigned char *)data;
+    char line[128];  // buffer for one line of hex
+    size_t pos = 0;
+
+    wifi_util_info_print(WIFI_CTRL, "HEX DUMP (%zu bytes):\n", size);
+
+    for (size_t i = 0; i < size; i++) {
+        pos += snprintf(line + pos, sizeof(line) - pos, "%02X ", bytes[i]);
+
+        // Every 16 bytes, or last byte, flush the line to log
+        if ((i + 1) % 16 == 0 || i + 1 == size) {
+            wifi_util_info_print(WIFI_CTRL, "%s\n", line);
+            pos = 0;  // reset buffer
+            line[0] = '\0';
+        }
+    }
+}
+
+/**
+void printHexDump(const void *data, size_t size)
+{
+    const unsigned char *bytes = (const unsigned char *)data;
+    for (size_t i = 0; i < size; i++) {
+         wifi_util_info_print(WIFI_CTRL,"%02X ", bytes[i]);
+         if ((i + 1) % 16 == 0) printf(" \n"); // Optional: break every 16 bytes
+     }
+    wifi_util_info_print(WIFI_CTRL," \n");
+}
+*/
 void proto_process(unsigned char *data, unsigned int len)
 {
+    // full raw packet dump 
+    wifi_util_info_print(WIFI_CTRL, "IEEE1905: Full received packet (%d bytes):\n", len);
+    printHexDump(data, len);
+    
     wifi_ctrl_t *ctrl;
     multiap_cmdu_t *cmdu;
     int ret = -1;
     multiap_raw_hdr_t *hdr = (multiap_raw_hdr_t *)(data);
     cmdu = (multiap_cmdu_t *)(data + sizeof(multiap_raw_hdr_t));
+    
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: sizeof(multiap_raw_hdr_t) = %d ; sizeof(multiap_cmdu_t) = %d .\n",sizeof(multiap_raw_hdr_t),sizeof(multiap_cmdu_t));
+
+    wifi_util_info_print(WIFI_CTRL,"Hex dump of cmdu:\n");    
+    printHexDump(cmdu, sizeof(multiap_cmdu_t));
+
+    wifi_util_info_print(WIFI_CTRL,"Hex dump of source addr:\n");
+    printHexDump(hdr->src, sizeof(hdr->src));
+
+    wifi_util_info_print(WIFI_CTRL,"Hex dump of dest addr\n");
+    printHexDump(hdr->dst, sizeof(hdr->dst));
 
     if (memcmp(hdr->src, hdr->dst, sizeof(mac_address_t)) == 0){
         wifi_util_info_print(WIFI_CTRL, "%s:%d :Failed to initialize socket on\n", __func__,__LINE__);
@@ -746,9 +792,16 @@ void proto_process(unsigned char *data, unsigned int len)
         return;
     }
     ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
-    wifi_util_info_print(WIFI_CTRL, "%s:%d :Got a valid packet of type =%d\n", __func__,__LINE__,htons(cmdu->type));
-    switch (htons(cmdu->type)) {
+    wifi_util_info_print(WIFI_CTRL, "%s:%d :Got a valid packet of type =%d ;  type =%u.\n", __func__,__LINE__,ntohs(cmdu->type),ntohs(cmdu->type));
+    
+    //data is recieved from the network , so type is in network byte order.
+    //before comparing with enum value of msg type it should be converted to host byte order.
+    int msg_type = ntohs(cmdu->type);
+    wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905: msg_type = %d.\n",__func__,__LINE__,msg_type);
+
+    switch (msg_type) {
         case multiap_msg_type_autoconf_search:
+            wifi_util_info_print(WIFI_CTRL, "%s:%d : case multiap_msg_type_autoconf_search.\n",__func__,__LINE__);
             if (state == multiap_state_none) {
                 wifi_util_info_print(WIFI_CTRL, "%s:%d :Got a  packet of type =%d\n processing it", __func__,__LINE__,htons(cmdu->type));
                 ret = handle_autoconf_search(data,len);
@@ -763,6 +816,7 @@ void proto_process(unsigned char *data, unsigned int len)
             }
         break;
         case multiap_msg_type_autoconf_resp:
+            wifi_util_info_print(WIFI_CTRL, "%s:%d : case multiap_msg_type_autoconf_resp.\n",__func__,__LINE__);
             if (state == multiap_state_search_rsp_pending) {
                 wifi_util_info_print(WIFI_CTRL, "%s:%d :Got a valid packet of type =%d\n processing it", __func__,__LINE__,htons(cmdu->type));
                 state =  multiap_state_completed;
@@ -817,11 +871,13 @@ static void *receive_multicast_message(void *ctx)
             break;
         }
 
+        //loop through all interfaces: IEEE1905
         for (int i = 0; i < MAX_IFACES; ++i) {
             if (FD_ISSET(sockets[i], &readfds)) {
+                wifi_util_info_print(WIFI_CTRL,"IEEE1905: Data Available ; Ittration = %d\n",i);
                 ssize_t len = recvfrom(sockets[i], buffer, BUF_SIZE, 0, NULL, NULL);
-                if (len < 0) {
-                    wifi_util_info_print(WIFI_CTRL,"recvfrom \n");
+                if (len <= 0) {
+                    wifi_util_info_print(WIFI_CTRL,"IEEE1905: recvfrom returns 0 len Data.\n");
                     continue;
                 }
                 proto_process((unsigned char *)buffer,len);
