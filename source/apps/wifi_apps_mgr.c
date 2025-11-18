@@ -352,7 +352,7 @@ int apps_mgr_init(wifi_ctrl_t *ctrl, wifi_app_descriptor_t *descriptor, unsigned
         wifi_util_info_print(WIFI_APPS,"%s:%d desc:%s rfc:%d enable:%d\n", __func__, __LINE__,
             descriptor->desc, descriptor->rfc, descriptor->enable);
         if (descriptor->rfc == true) {
-	     wifi_util_info_print(WIFI_APPS,"%s:%d IEEE1905: Calling app_register() for %s\n", __func__, __LINE__, descriptor->desc);
+	        //wifi_util_info_print(WIFI_APPS,"%s:%d IEEE1905: Calling app_register() for %s\n", __func__, __LINE__, descriptor->desc);
             app_register(apps_mgr, descriptor);
         }
         descriptor++;
