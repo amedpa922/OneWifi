@@ -2918,18 +2918,20 @@ static void create_station_with_private_credentials(webconfig_subdoc_data_t *dat
         private_vap_index = convert_vap_name_to_index(&data->u.decoded.hal_cap.wifi_prop,private_vap_names[i]);
         if (private_vap_index == RETURN_ERR) {
             continue;
-       }
+        }
+        wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905  vap_index & private_vap_index.\n",__func__, __LINE__);
         status = get_vap_and_radio_index_from_vap_instance(&data->u.decoded.hal_cap.wifi_prop, vap_index, (uint8_t *)&radio_index, (uint8_t *)&vap_array_index);
         if (status == RETURN_ERR) {
+            wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905  break 1 Status = %d ; i=%d.\n",__func__, __LINE__,status,i);
             break;
         }
         status = get_vap_and_radio_index_from_vap_instance(&data->u.decoded.hal_cap.wifi_prop, private_vap_index, (uint8_t *)&radio_index, (uint8_t *)&private_vap_array_index);
         if (status == RETURN_ERR) {
+            wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905  break 2 Status = %d ; i=%d.\n",__func__, __LINE__,status,i);
             break;
         }
         else {
-           
-            wifi_util_error_print(WIFI_CTRL, "%s:%d  IEEE1905: pvt=%s passphrase = %s\n", __func__, __LINE__,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.ssid,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.security.u.key.key);
+            wifi_util_info_print(WIFI_CTRL, "%s:%d  IEEE1905: pvt=%s passphrase = %s\n", __func__, __LINE__,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.ssid,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.security.u.key.key);
             snprintf(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.ssid,sizeof(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.ssid),data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.ssid);
             snprintf(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.security.u.key.key,sizeof(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.security.u.key.key),data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.security.u.key.key);
             

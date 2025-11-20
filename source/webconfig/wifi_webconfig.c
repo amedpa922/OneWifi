@@ -188,42 +188,45 @@ webconfig_error_t webconfig_set(webconfig_t *config, webconfig_subdoc_data_t *da
     webconfig_error_t err = RETURN_OK;
 
     if (validate_subdoc_data(config, data) == false) {
-        wifi_util_error_print(WIFI_WEBCONFIG,"%s:%d: Invalid data .. not parsable\n", __func__, __LINE__);
+        wifi_util_error_print(WIFI_WEBCONFIG,"%s:%d: IEEE1905: Invalid data .. not parsable\n", __func__, __LINE__);
         return webconfig_error_invalid_subdoc;
     }
 
     doc = &config->subdocs[data->type];
     if (doc->access_check_subdoc(config, data) != webconfig_error_none) {
-        wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: invalid access for subdocument type:%d in entity:%d\n",
+        wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d:IEEE1905: invalid access for subdocument type:%d in entity:%d\n",
             __func__, __LINE__, doc->type, config->initializer);
         return webconfig_error_not_permitted;
     }
 
     if ((data->descriptor & webconfig_data_descriptor_decoded) == webconfig_data_descriptor_decoded) {
+        wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: webconfig_data_descriptor_decoded.\n", __func__, __LINE__);
         if ((err = doc->translate_to_subdoc(config, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument translation failed\n", __func__, __LINE__);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905:Subdocument translation failed\n", __func__, __LINE__);
         } else if ((err = doc->encode_subdoc(config, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument encode failed\n", __func__, __LINE__);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: Subdocument encode failed\n", __func__, __LINE__);
         } else if ((data->descriptor = webconfig_data_descriptor_encoded)
                     && (config->apply_data(doc, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d Subdocument apply failed\n", __func__, __LINE__);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905: Subdocument apply failed\n", __func__, __LINE__);
             err = webconfig_error_apply;
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905 err = %d \n", __func__, __LINE__,err);
         }
     } else if ((data->descriptor & webconfig_data_descriptor_encoded) == webconfig_data_descriptor_encoded) {
+        wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: webconfig_data_descriptor_decoded.\n", __func__, __LINE__);
         if ((err = doc->decode_subdoc(config, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument decode failed\n", __func__, __LINE__);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: Subdocument decode failed\n", __func__, __LINE__);
         } else if ((err = doc->translate_from_subdoc(config, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: Subdocument translation failed\n", __func__, __LINE__);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: Subdocument translation failed\n", __func__, __LINE__);
         } else if ((data->descriptor = webconfig_data_descriptor_decoded)
                     && (config->apply_data(doc, data)) != webconfig_error_none) {
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d Subdocument apply failed\n", __func__, __LINE__);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905: Subdocument apply failed\n", __func__, __LINE__);
             err = webconfig_error_apply;
         }
     }
 
 
     data->descriptor = 0;
-
+    wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905 err = %d.\n", __func__, __LINE__,err);
     return err;
 
 }
