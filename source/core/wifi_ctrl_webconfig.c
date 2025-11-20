@@ -2909,12 +2909,14 @@ static void create_station_with_private_credentials(webconfig_subdoc_data_t *dat
     wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905 Inside create_station_with_private_credentials().\n",__func__, __LINE__);
 
     for (int i = 0; i < num_vaps || i < private_num_vaps; i++) {
+        wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905 vap_index. i = %d.\n",__func__, __LINE__,i);
         vap_index = convert_vap_name_to_index(&data->u.decoded.hal_cap.wifi_prop,vap_names[i]);
         if (vap_index == RETURN_ERR) {
+            wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905 above continue vap_index. i = %d.\n",__func__, __LINE__,i);
             continue;
         }
 
-       
+        wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905 private_vap_index i = %d.\n",__func__, __LINE__,i);
         private_vap_index = convert_vap_name_to_index(&data->u.decoded.hal_cap.wifi_prop,private_vap_names[i]);
         if (private_vap_index == RETURN_ERR) {
             continue;
@@ -3016,6 +3018,7 @@ void start_station_vaps(bool is_private,bool rf_status)
             .u.sta_info.security.u.radius.s_ip));
     }
     
+
     if (webconfig_encode(&ctrl->webconfig, data, webconfig_subdoc_type_mesh_sta) ==
         webconfig_error_none) {
         wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: webconfig_encode success\n", __FUNCTION__, __LINE__);

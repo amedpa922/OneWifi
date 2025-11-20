@@ -209,10 +209,12 @@ webconfig_error_t webconfig_set(webconfig_t *config, webconfig_subdoc_data_t *da
                     && (config->apply_data(doc, data)) != webconfig_error_none) {
             wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905: Subdocument apply failed\n", __func__, __LINE__);
             err = webconfig_error_apply;
-            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905 err = %d \n", __func__, __LINE__,err);
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905 ist if block err = %d \n", __func__, __LINE__,err);
+        } else{
+            wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d IEEE1905 in else .\n", __func__, __LINE__);
         }
     } else if ((data->descriptor & webconfig_data_descriptor_encoded) == webconfig_data_descriptor_encoded) {
-        wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: webconfig_data_descriptor_decoded.\n", __func__, __LINE__);
+        wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: webconfig_data_descriptor_encoded.\n", __func__, __LINE__);
         if ((err = doc->decode_subdoc(config, data)) != webconfig_error_none) {
             wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: IEEE1905: Subdocument decode failed\n", __func__, __LINE__);
         } else if ((err = doc->translate_from_subdoc(config, data)) != webconfig_error_none) {
