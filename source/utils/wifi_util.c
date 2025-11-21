@@ -631,7 +631,7 @@ int get_vap_and_radio_index_from_vap_instance(wifi_platform_property_t *wifi_pro
 
     if (vap_array_index == -1) {
         status = RETURN_ERR;
-        wifi_util_dbg_print(WIFI_CTRL,"%s:%d: Error, could not find vap array index and radio index for vap_index %d\n",__func__, __LINE__, vap_instance);
+        wifi_util_dbg_print(WIFI_CTRL,"%s:%d: IEEE1905 Error, could not find vap array index and radio index for vap_index %d\n",__func__, __LINE__, vap_instance);
     }
 
     return status;

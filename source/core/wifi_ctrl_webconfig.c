@@ -2900,14 +2900,14 @@ void create_station_with_xfinity_credentials(webconfig_subdoc_data_t *data ,int 
     }
 }
 
-static void create_station_with_private_credentials(webconfig_subdoc_data_t *data,int num_vaps,int private_num_vaps,wifi_vap_name_t *private_vap_names )
+static void create_station_with_private_credentials(webconfig_subdoc_data_t *data,int num_vaps,int private_num_vaps,wifi_vap_name_t *private_vap_names ,wifi_vap_name_t *vap_names)
 {
     int private_vap_index = 0, radio_index = 0, vap_index = 0;
     int status = RETURN_OK;
     int vap_array_index = 0,private_vap_array_index = 0;
-    wifi_vap_name_t vap_names[MAX_NUM_RADIOS] = { 0 };
+    //wifi_vap_name_t vap_names[MAX_NUM_RADIOS] = { 0 };
     wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905 Inside create_station_with_private_credentials().\n",__func__, __LINE__);
-
+    
     for (int i = 0; i < num_vaps || i < private_num_vaps; i++) {
         wifi_util_info_print(WIFI_CTRL, "%s:%d : IEEE1905 vap_index. i = %d.\n",__func__, __LINE__,i);
         vap_index = convert_vap_name_to_index(&data->u.decoded.hal_cap.wifi_prop,vap_names[i]);
@@ -2933,7 +2933,7 @@ static void create_station_with_private_credentials(webconfig_subdoc_data_t *dat
             break;
         }
         else {
-            wifi_util_info_print(WIFI_CTRL, "%s:%d  IEEE1905: pvt=%s passphrase = %s\n", __func__, __LINE__,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.ssid,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.security.u.key.key);
+            wifi_util_info_print(WIFI_CTRL, "%s:%d  IEEE1905: pvt=%s passphrase = %s radio_index = %d\n", __func__, __LINE__,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.ssid,data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.security.u.key.key,radio_index);
             snprintf(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.ssid,sizeof(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.ssid),data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.ssid);
             snprintf(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.security.u.key.key,sizeof(data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index].u.sta_info.security.u.key.key),data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[private_vap_array_index].u.bss_info.security.u.key.key);
             
@@ -2966,7 +2966,11 @@ void start_station_vaps(bool is_private,bool rf_status)
     unsigned int num_vaps = get_list_of_mesh_sta(&data->u.decoded.hal_cap.wifi_prop, MAX_NUM_RADIOS,
         &vap_names[0]);
     wifi_util_info_print(WIFI_CTRL,"IEEE1905: num_vaps = %d .\n",num_vaps);
-    wifi_util_info_print(WIFI_CTRL,"IEEE1905: is_private = %d ; rf_status = %d.\n",is_private,rf_status);
+    //print vap_names 
+    for (unsigned int i = 0; i < num_vaps; i++) {
+        wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: vap_names[%d] = %s.\n",__func__, __LINE__, i, vap_names[i]);
+    }
+
     if (rf_status && !is_private) {//if rf_status is true && is_private is false, then calls xfinity
         wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: RF is down creating station with Hotspot credentials\n", __func__, __LINE__);
 	    create_station_with_xfinity_credentials(data,num_vaps,vap_names);
@@ -2975,7 +2979,11 @@ void start_station_vaps(bool is_private,bool rf_status)
         wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: creating station with private credentials\n", __func__, __LINE__);
         private_num_vaps = get_list_of_private_ssid(&data->u.decoded.hal_cap.wifi_prop, MAX_NUM_RADIOS, &private_vap_names[0]);
 	    wifi_util_info_print(WIFI_CTRL,"IEEE1905: private_num_vaps = %d .\n",private_num_vaps);
-        create_station_with_private_credentials(data,num_vaps,private_num_vaps,private_vap_names);
+        //print private_vap_names
+        for (unsigned int i = 0; i < private_num_vaps; i++) {
+            wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: private_vap_names[%d] = %s.\n",__func__, __LINE__, i, private_vap_names[i]);
+        }
+        create_station_with_private_credentials(data,num_vaps,private_num_vaps,private_vap_names,vap_names);
     }
     else {
         wifi_util_info_print(WIFI_CTRL,"IEEE1905: station vaps going back to default case \n");
