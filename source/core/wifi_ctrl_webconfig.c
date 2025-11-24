@@ -3026,7 +3026,6 @@ void start_station_vaps(bool is_private,bool rf_status)
             .u.sta_info.security.u.radius.s_ip));
     }
     
-
     if (webconfig_encode(&ctrl->webconfig, data, webconfig_subdoc_type_mesh_sta) ==
         webconfig_error_none) {
         wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: webconfig_encode success\n", __FUNCTION__, __LINE__);
