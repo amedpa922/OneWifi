@@ -283,8 +283,10 @@ void sta_selfheal_handing(wifi_ctrl_t *ctrl, vap_svc_t *l_svc)
 bool is_sta_enabled(void)
 {
     wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
-    wifi_util_dbg_print(WIFI_CTRL,"[%s:%d] device mode:%d active_gw_check:%d and rf_status_down=%d\r\n",
+    wifi_util_dbg_print(WIFI_CTRL,"[%s:%d]IEEE1905: device mode:%d active_gw_check:%d and rf_status_down=%d\r\n",
        __func__, __LINE__, ctrl->network_mode, ctrl->active_gw_check,  ctrl->rf_status_down);
+
+   wifi_util_dbg_print(WIFI_CTRL,"[%s:%d] IEEE1905: ctrl->eth_bh_status = %d.\n",__func__, __LINE__,ctrl->eth_bh_status);
    return ((ctrl->network_mode == rdk_dev_mode_type_ext ||
               ctrl->network_mode == rdk_dev_mode_type_em_node || ctrl->active_gw_check == true || 
               ctrl->rf_status_down == true ) &&  ctrl->eth_bh_status == false);
@@ -766,7 +768,8 @@ void start_gateway_vaps()
     unsigned int value;
     wifi_ctrl_t *ctrl;
     ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
-
+    bool rf_status = false;
+    wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: inside start_gateway_vaps().\n", __func__,__LINE__);
     priv_svc = get_svc_by_type(ctrl, vap_svc_type_private);
     pub_svc = get_svc_by_type(ctrl, vap_svc_type_public);
     mesh_gw_svc = get_svc_by_type(ctrl, vap_svc_type_mesh_gw);
@@ -794,9 +797,10 @@ void start_gateway_vaps()
     } else {
         wifi_util_error_print(WIFI_CTRL, "%s:%d Failed to get the data for Active GW check\n", __func__, __LINE__);
     }
-    
+    rf_status = true;
+    ctrl->rf_status_down = rf_status;
     if (is_sta_enabled() == true) {
-        wifi_util_info_print(WIFI_CTRL, "%s:%d start mesh sta\n",__func__, __LINE__);
+        wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: start mesh sta.\n",__func__, __LINE__);
         start_extender_vaps();
     }
 }
@@ -831,10 +835,10 @@ int start_wifi_services(void)
 {
     wifi_ctrl_t *ctrl = NULL;
     ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
-
-
+    wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: Inside start_wifi_services().\n",__func__, __LINE__);
+    
     if (ctrl->network_mode == rdk_dev_mode_type_gw) {
-        wifi_util_info_print(WIFI_CTRL, "%s:%d start gw vaps\n",__func__, __LINE__);
+        wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: start gw vaps\n",__func__, __LINE__);
         start_radios(rdk_dev_mode_type_gw);
         start_gateway_vaps();
         captive_portal_check();
@@ -1760,7 +1764,7 @@ int start_wifi_ctrl(wifi_ctrl_t *ctrl)
     int monitor_ret = 0;
 
     monitor_ret = init_wifi_monitor();
-
+    wifi_util_error_print(WIFI_CTRL,"%s:%d IEEE1905 Calling start_wifi_services() from start_wifi_ctrl() .\n", __func__, __LINE__);
     start_wifi_services();
 
     init_wireless_interface_mac();
@@ -1782,7 +1786,7 @@ int start_wifi_ctrl(wifi_ctrl_t *ctrl)
     } else {
         wifi_util_error_print(WIFI_CTRL,"%s:%d Failed to start Wifi Monitor\n", __func__, __LINE__);
     }
-    wifi_util_error_print(WIFI_CTRL,"%s:%d IEEE1905.\n", __func__, __LINE__);
+    
 #ifdef ONEWIFI_ANALYTICS_APP_SUPPORT
     apps_mgr_analytics_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_start, NULL);
 #endif
