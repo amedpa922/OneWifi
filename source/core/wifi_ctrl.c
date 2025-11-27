@@ -768,7 +768,7 @@ void start_gateway_vaps()
     unsigned int value;
     wifi_ctrl_t *ctrl;
     ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
-    bool rf_status = false;
+    //bool rf_status = false;
     wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: inside start_gateway_vaps().\n", __func__,__LINE__);
     priv_svc = get_svc_by_type(ctrl, vap_svc_type_private);
     pub_svc = get_svc_by_type(ctrl, vap_svc_type_public);
@@ -797,8 +797,8 @@ void start_gateway_vaps()
     } else {
         wifi_util_error_print(WIFI_CTRL, "%s:%d Failed to get the data for Active GW check\n", __func__, __LINE__);
     }
-    rf_status = true;
-    ctrl->rf_status_down = rf_status;
+    //rf_status = true;
+    //ctrl->rf_status_down = rf_status;
     if (is_sta_enabled() == true) {
         wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: start mesh sta.\n",__func__, __LINE__);
         start_extender_vaps();

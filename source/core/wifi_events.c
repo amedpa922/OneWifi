@@ -295,6 +295,7 @@ wifi_event_t *create_wifi_event(unsigned int msg_len, wifi_event_type_t type,
             type);
         return NULL;
     }
+    wifi_util_info_print(WIFI_CTRL, "%s %d IEEE1905: create_wifi_event().\n", __FUNCTION__, __LINE__);
     event = (wifi_event_t *)calloc(1, sizeof(wifi_event_t));
     if (event == NULL) {
         wifi_util_error_print(WIFI_CTRL,
@@ -753,12 +754,12 @@ int push_event_to_ctrl_queue(const void *msg, unsigned int len, wifi_event_type_
     wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
     wifi_event_t *event;
     bool is_limit_reached;
-
+    
     if (msg == NULL) {
         wifi_util_error_print(WIFI_CTRL, "%s %d  msg is null\n", __FUNCTION__, __LINE__);
         return RETURN_ERR;
     }
-
+    wifi_util_info_print(WIFI_CTRL, "%s %d IEEE1905:Inside push_event_to_ctrl_queue().\n", __FUNCTION__, __LINE__);
     event = create_wifi_event(len, type, sub_type);
     if (event == NULL) {
         wifi_util_error_print(WIFI_CTRL,

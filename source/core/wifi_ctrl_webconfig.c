@@ -2961,7 +2961,7 @@ void start_station_vaps(bool is_private,bool rf_status)
         return;
     }
 
-    webconfig_init_subdoc_data(data);
+    webconfig_init_subdoc_data(&data);
 
     unsigned int num_vaps = get_list_of_mesh_sta(&data->u.decoded.hal_cap.wifi_prop, MAX_NUM_RADIOS,
         &vap_names[0]);
@@ -3026,7 +3026,7 @@ void start_station_vaps(bool is_private,bool rf_status)
             .u.sta_info.security.u.radius.s_ip));
     }
     
-    if (webconfig_encode(&ctrl->webconfig, data, webconfig_subdoc_type_mesh_sta) ==
+    if (webconfig_encode(&ctrl->webconfig, &data, webconfig_subdoc_type_mesh_sta) ==
         webconfig_error_none) {
         wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: webconfig_encode success\n", __FUNCTION__, __LINE__);
         str = data->u.encoded.raw;
