@@ -114,7 +114,7 @@ void process_scan_results_event(scan_results_t *results, unsigned int len)
     wifi_mgr_t *mgr = (wifi_mgr_t *)get_wifimgr_obj();
 
     ctrl = &mgr->ctrl;
-
+    wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905.\n",__func__, __LINE__);
     ext_svc = get_svc_by_type(ctrl, vap_svc_type_mesh_ext);
     if (is_sta_enabled()) {
         ext_svc->event_fn(ext_svc, wifi_event_type_hal_ind, wifi_event_scan_results, vap_svc_event_none, results);

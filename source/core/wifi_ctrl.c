@@ -286,7 +286,6 @@ bool is_sta_enabled(void)
     wifi_util_dbg_print(WIFI_CTRL,"[%s:%d]IEEE1905: device mode:%d active_gw_check:%d and rf_status_down=%d\r\n",
        __func__, __LINE__, ctrl->network_mode, ctrl->active_gw_check,  ctrl->rf_status_down);
 
-   wifi_util_dbg_print(WIFI_CTRL,"[%s:%d] IEEE1905: ctrl->eth_bh_status = %d.\n",__func__, __LINE__,ctrl->eth_bh_status);
    return ((ctrl->network_mode == rdk_dev_mode_type_ext ||
               ctrl->network_mode == rdk_dev_mode_type_em_node || ctrl->active_gw_check == true || 
               ctrl->rf_status_down == true ) &&  ctrl->eth_bh_status == false);
@@ -299,7 +298,7 @@ void ctrl_queue_loop(wifi_ctrl_t *ctrl)
     time_t  time_diff;
     int rc = 0;
     wifi_event_t *event = NULL;
-
+    wifi_util_dbg_print(WIFI_CTRL,"[%s:%d] IEEE1905.\n",__func__, __LINE__);
     pthread_mutex_lock(&ctrl->queue_lock);
     while (ctrl->exit_ctrl == false) {
 
@@ -326,6 +325,10 @@ void ctrl_queue_loop(wifi_ctrl_t *ctrl)
                     continue;
                 }
                 pthread_mutex_unlock(&ctrl->queue_lock);
+                if (event->event_type == wifi_event_type_hal_ind){
+                    wifi_util_dbg_print(WIFI_CTRL,"[%s:%d] IEEE1905 event type = %s.\n",__func__, __LINE__,wifi_event_type_to_string(event->event_type));
+
+                }
                 switch (event->event_type) {
                     case wifi_event_type_webconfig:
                         handle_webconfig_event(ctrl, event->u.core_data.msg, event->u.core_data.len, event->sub_type);
@@ -1069,7 +1072,7 @@ int scan_results_callback(int radio_index, wifi_bss_info_t **bss, unsigned int *
     memset(&res, 0, sizeof(scan_results_t));
 
     res.radio_index = radio_index;
-
+    wifi_util_info_print(WIFI_CTRL,"%s: IEEE1905 \n",__FUNCTION__);
     if (*num) {
         // if number of scanned AP's is more than size of res.bss array - truncate
         if (*num > MAX_SCANNED_VAPS){

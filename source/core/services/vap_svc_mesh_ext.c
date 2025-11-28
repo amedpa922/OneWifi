@@ -1453,7 +1453,7 @@ int process_ext_scan_results(vap_svc_t *svc, void *arg)
     num = results->num;
 
     tmp_bss = bss;
-
+    wifi_util_info_print(WIFI_CTRL, "%s:%d: IEEE1905 \n",__FUNCTION__,__LINE__);
     if (ext->conn_state == connection_state_connected_scan_list) {
         process_ext_connected_scan_results(svc, arg);
         return 0;
@@ -1985,6 +1985,10 @@ int process_ext_channel_change(vap_svc_t *svc, void *arg)
 
 int process_ext_hal_ind(vap_svc_t *svc, wifi_event_subtype_t sub_type, void *arg)
 {
+    if (sub_type == wifi_event_scan_results) {
+        wifi_util_info_print(WIFI_CTRL, "%s:%d:IEEE1905 sub_type:%s \n", __func__, __LINE__,
+            wifi_event_subtype_to_string(sub_type));
+    }
     switch (sub_type) {
     case wifi_event_scan_results:
         process_ext_scan_results(svc, arg);
@@ -2069,6 +2073,10 @@ int process_ext_webconfig(vap_svc_t *svc, wifi_event_subtype_t sub_type, void *a
 int vap_svc_mesh_ext_event(vap_svc_t *svc, wifi_event_type_t type, wifi_event_subtype_t sub_type,
     vap_svc_event_t event, void *arg)
 {
+    if (type == wifi_event_type_hal_ind) {
+        wifi_util_info_print(WIFI_CTRL, "%s:%d: IEEE1905 type:%s \n", __func__, __LINE__,
+            wifi_event_type_to_string(type));
+    }
     switch (type) {
     case wifi_event_type_exec:
         process_ext_exec(svc, sub_type, arg);
