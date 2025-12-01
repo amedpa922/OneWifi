@@ -295,7 +295,7 @@ wifi_event_t *create_wifi_event(unsigned int msg_len, wifi_event_type_t type,
             type);
         return NULL;
     }
-    if ((type == wifi_event_type_exec) || (type == wifi_event_type_hal_ind) ){
+    if ((type == wifi_event_type_exec) || (type == wifi_event_type_hal_ind) || (type == wifi_event_type_webconfig) ){
         wifi_util_info_print(WIFI_CTRL, "%s %d IEEE1905: create_wifi_event() where type = %s.\n", __FUNCTION__, __LINE__,wifi_event_type_to_string(type));
     }
     event = (wifi_event_t *)calloc(1, sizeof(wifi_event_t));

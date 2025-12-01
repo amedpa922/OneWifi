@@ -910,9 +910,11 @@ void receive_multiap_message()
 }
  int exec_event_multiap(wifi_app_t *apps, wifi_event_subtype_t sub_type, void *arg)
  {
-    wifi_util_info_print(WIFI_CTRL,"IEEE1905: Inside exec_event_multiap().\n");
+    wifi_util_info_print(WIFI_CTRL,"IEEE1905: Inside exec_event_multiap() and sub_type = %s.\n",wifi_event_subtype_to_string(sub_type));
+    sub_type = 1;
     switch (sub_type) {
         case wifi_event_exec_start:
+            wifi_util_info_print(WIFI_CTRL,"IEEE1905: calling multiap_event_exec_start().\n");
             multiap_event_exec_start(apps, arg);
         break;
 
@@ -924,7 +926,7 @@ void receive_multiap_message()
             multiap_event_exec_timeout(apps, arg);
         break;
         default:
-            wifi_util_error_print(WIFI_APPS, "%s:%d: event not handle %s\r\n", __func__, __LINE__,
+            wifi_util_error_print(WIFI_APPS, "%s:%d: event not handle %s\n", __func__, __LINE__,
             wifi_event_subtype_to_string(sub_type));
         break;
     }
