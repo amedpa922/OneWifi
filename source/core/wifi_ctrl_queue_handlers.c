@@ -3684,6 +3684,7 @@ void handle_hal_indication(wifi_ctrl_t *ctrl, void *data, unsigned int len,
 {
     bool nop_start_reboot = 0;
     unsigned int dfs_timer_secs = 0;
+    wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 subtype =%d.\n",__FUNCTION__,subtype);
     switch (subtype) {
     case wifi_event_hal_unknown_frame:
         process_unknown_frame_event(data, len);
@@ -3742,6 +3743,7 @@ void handle_hal_indication(wifi_ctrl_t *ctrl, void *data, unsigned int len,
         break;
 
     case wifi_event_scan_results:
+        wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 wifi_event_scan_results.\n",__FUNCTION__);
         process_scan_results_event(data, len);
         break;
 
@@ -3840,7 +3842,8 @@ void handle_webconfig_event(wifi_ctrl_t *ctrl, const char *raw, unsigned int len
     wifi_vap_name_t vap_names[MAX_NUM_RADIOS * MAX_NUM_VAP_PER_RADIO];
     unsigned int num_ssid = 0;
     cJSON *json = NULL;
-
+    
+    wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 subtype = %s .\n",__FUNCTION__,wifi_event_subtype_to_string(subtype));
     switch (subtype) {
     case wifi_event_webconfig_set_data:
     case wifi_event_webconfig_set_data_dml:
@@ -3858,6 +3861,7 @@ void handle_webconfig_event(wifi_ctrl_t *ctrl, const char *raw, unsigned int len
         json = cJSON_Parse(raw);
         subdoc_type = find_subdoc_type(config, json);
         cJSON_Delete(json);
+        wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 subdoc_type = %d.\n",__FUNCTION__,subdoc_type);
         switch (subdoc_type) {
         case webconfig_subdoc_type_private:
             num_ssid += get_list_of_private_ssid(&mgr->hal_cap.wifi_prop, MAX_NUM_RADIOS,
@@ -3889,6 +3893,7 @@ void handle_webconfig_event(wifi_ctrl_t *ctrl, const char *raw, unsigned int len
             break;
 
         default:
+            wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 Default case.\n",__FUNCTION__);
             break;
         }
 
