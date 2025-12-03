@@ -473,7 +473,8 @@ int send_frame(unsigned char *buff, unsigned int len, bool multicast,  char *ifn
     unsigned char buff[MAX_BUFF_SZ];
     unsigned int sz;
     int i = 0;
-    wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
+    //Commenting for resolving compilation error "error: unused variable 'ctrl'"
+    //wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
     wifi_util_info_print(WIFI_CTRL,"%s:%d: ifname = %s\n",__func__, __LINE__,ifname);
     //state = multiap_state_none;
     if(multiap_service_type_extender == get_service_type() || state != multiap_state_none)
@@ -496,7 +497,7 @@ int send_frame(unsigned char *buff, unsigned int len, bool multicast,  char *ifn
     //state = multiap_state_none;
     wifi_util_info_print(WIFI_CTRL,"autoconfig_search send successful and state =%d \n",state);
     // After sending for Autofconfig search for 50 times if no reply is seen then the other device is in extender mode
-      apps_mgr_multiap_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_stop, NULL, 0);
+      //apps_mgr_multiap_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_stop, NULL, 0);
 }
 
 int set_bp_filter(int sockfd,const char *iface_name)

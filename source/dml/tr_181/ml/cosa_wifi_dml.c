@@ -79,6 +79,7 @@
 #include <wifi_hal.h>
 #include "../../../stubs/wifi_stubs.h"
 #include "wifi_monitor.h"
+#include "wifi_events.h"
 
 #if defined (FEATURE_SUPPORT_WEBCONFIG)
 //#include "../sbapi/wifi_webconfig.h"
@@ -835,7 +836,7 @@ WiFi_SetParamBoolValue
     UNREFERENCED_PARAMETER(hInsContext);
     wifi_global_config_t *global_wifi_config;
     global_wifi_config = (wifi_global_config_t*) get_dml_cache_global_wifi_config();
-
+    wifi_ctrl_t *ctrl = (wifi_ctrl_t *)get_wifictrl_obj();
     if (global_wifi_config == NULL)
     {
         wifi_util_dbg_print(WIFI_DMCLI,"%s:%d Unable to get Global Config\n", __FUNCTION__,__LINE__);
@@ -1228,6 +1229,19 @@ WiFi_SetParamBoolValue
         if(bValue != rfc_pcfg->wpa3_compatibility_enable) {
             push_rfc_dml_cache_to_one_wifidb(bValue, wifi_event_type_rsn_override_rfc);
             wifi_util_dbg_print(WIFI_DMCLI,"%s:%d setting WPA3_Personal_Compatibility RFC to %d \n", __FUNCTION__, __LINE__, bValue);
+        }
+        return TRUE;
+    }
+
+    if(AnscEqualString(ParamName, "multiap_mesh", TRUE))
+    {
+        wifi_util_info_print(WIFI_DMCLI,"%s:%d multiap_mesh[bValue] = %d.\n", __func__, __LINE__,bValue);
+        if (bValue) {
+            wifi_util_info_print(WIFI_DMCLI,"%s:%d wifi_event_exec_start.\n", __func__, __LINE__);
+            apps_mgr_multiap_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_start, NULL, 0);
+        } else {
+            wifi_util_info_print(WIFI_DMCLI,"%s:%d wifi_event_exec_stop.\n", __func__, __LINE__);
+            apps_mgr_multiap_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_stop, NULL, 0);
         }
         return TRUE;
     }

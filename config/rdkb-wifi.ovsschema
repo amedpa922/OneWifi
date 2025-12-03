@@ -1931,6 +1931,15 @@
             "max": 1
           }
         },
+        "multiap_mesh": {  
+          "type": {  
+            "key": {  
+              "type": "boolean"  
+            },  
+            "min": 0,  
+            "max": 1  
+          }  
+        },
         "tx_overflow_selfheal": {
           "type": {
             "key": {
