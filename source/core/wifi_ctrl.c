@@ -298,7 +298,7 @@ void ctrl_queue_loop(wifi_ctrl_t *ctrl)
     int rc = 0;
     wifi_event_t *event = NULL;
     
-    wifi_util_info_print(WIFI_CTRL,"[%s]: ctrl_queue_loop().\n",__FUNCTION__, event->event_type);
+    wifi_util_info_print(WIFI_CTRL,"[%s]: ctrl_queue_loop().\n",__FUNCTION__);
 
     pthread_mutex_lock(&ctrl->queue_lock);
     while (ctrl->exit_ctrl == false) {
@@ -323,7 +323,7 @@ void ctrl_queue_loop(wifi_ctrl_t *ctrl)
             while (queue_count(ctrl->queue)) {
                 event = queue_pop(ctrl->queue);
                 if (event == NULL) {
-                    wifi_util_info_print(WIFI_CTRL,"[%s]: event == NULL.\n",__FUNCTION__, event->event_type); 
+                    wifi_util_info_print(WIFI_CTRL,"[%s]: event == NULL.\n",__FUNCTION__); 
                     continue;
                 }
                 pthread_mutex_unlock(&ctrl->queue_lock);
@@ -1809,8 +1809,10 @@ int start_wifi_ctrl(wifi_ctrl_t *ctrl)
 #ifdef ONEWIFI_CAC_APP_SUPPORT
     apps_mgr_cac_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_start, NULL, 0);
 #endif
+#if 0
 #ifdef ONEWIFI_MULTIAP_APP_SUPPORT
     //apps_mgr_multiap_event(&ctrl->apps_mgr, wifi_event_type_exec, wifi_event_exec_start, NULL, 0);
+#endif
 #endif
 
     ctrl_queue_timeout_scheduler_tasks(ctrl);
