@@ -170,6 +170,7 @@ int multiap_event_exec_start(wifi_app_t *apps, void *arg)
     }
 
     ctrl->multiap_sta_enabled = true;
+    //wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: calling receive_multiap_message().\n",__func__,__LINE__);
     //receive_multiap_message();
     //start the station vaps only if none of the station is connected to vaps because in XLE when its in GW mode(with WAN failover) 
     // stations are connected to the GW then we should not start the station vaps

@@ -3087,7 +3087,7 @@ void start_station_vaps(bool is_private,bool rf_status)
     webconfig_subdoc_data_t *data = NULL;
    
     int vap_index = 0, radio_index = 0, vap_array_index = 0, band = 0;
-    char *str;
+    //char *str;
     unsigned int private_num_vaps = 0;
     char password[128] = { 0 };
     wifi_vap_name_t vap_names[MAX_NUM_RADIOS] = { 0 },private_vap_names[MAX_NUM_RADIOS] = {0};
@@ -3158,10 +3158,11 @@ void start_station_vaps(bool is_private,bool rf_status)
     if (webconfig_encode(&ctrl->webconfig, data, webconfig_subdoc_type_mesh_sta) ==
         webconfig_error_none) {
         wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: webconfig_encode success\n", __FUNCTION__, __LINE__);
-        str = data->u.encoded.raw;
+        //str = data->u.encoded.raw;
+        /*
         push_event_to_ctrl_queue(str, strlen(str), wifi_event_type_webconfig,
             wifi_event_webconfig_set_data_dml, NULL);
-
+        */
     } else {
         webconfig_data_free(data);
     }
