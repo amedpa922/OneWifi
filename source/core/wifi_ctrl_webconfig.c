@@ -1687,6 +1687,7 @@ int webconfig_hal_mesh_sta_vap_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded
             num_vaps++;
         }
     }
+    wifi_util_info_print(WIFI_MGR, "%s:%d IEEE1905 num_vaps = %d.\n", __func__, __LINE__,num_vaps);
     return webconfig_hal_vap_apply_by_name(ctrl, data, vap_names, num_vaps);
 }
 
@@ -3161,7 +3162,6 @@ void start_station_vaps(bool is_private,bool rf_status)
         str = data->u.encoded.raw;
         push_event_to_ctrl_queue(str, strlen(str), wifi_event_type_webconfig,
             wifi_event_webconfig_set_data_dml, NULL);
-
     } else {
         webconfig_data_free(data);
     }
