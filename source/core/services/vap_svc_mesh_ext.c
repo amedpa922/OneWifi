@@ -823,7 +823,8 @@ static void reset_sta_state(vap_svc_t *svc, unsigned int vap_index)
         }
     }
 }
-#define TARGET_MESH_SSID "MESH_STA_TEST_5G"
+#define TARGET_MESH_SSID_5G "MESH_STA_TEST_5G"
+#define TARGET_MESH_SSID_2G "MESH_STA_TEST_2G"
 void ext_try_connecting(vap_svc_t *svc)
 {
     vap_svc_ext_t   *ext;
@@ -839,11 +840,19 @@ void ext_try_connecting(vap_svc_t *svc)
 
     for (i = 0; i < ext->candidates_list.scan_count; i++) {
         if (strncmp(scan[i].external_ap.ssid,
-                TARGET_MESH_SSID,
+                TARGET_MESH_SSID_5G,
                 sizeof(scan[i].external_ap.ssid)) == 0) {
 
             candidate = &scan[i];
-            wifi_util_info_print(WIFI_CTRL,"%s:%d Found target SSID: %s\n",__func__, __LINE__,candidate->external_ap.ssid);
+            wifi_util_info_print(WIFI_CTRL,"%s:%d Found 5GHz target SSID: %s\n",__func__, __LINE__,candidate->external_ap.ssid);
+            break;
+        }
+        if (strncmp(scan[i].external_ap.ssid,
+                TARGET_MESH_SSID_2G,
+                sizeof(scan[i].external_ap.ssid)) == 0) {
+
+            candidate = &scan[i];
+            wifi_util_info_print(WIFI_CTRL,"%s:%d Found 2.4GHz target SSID: %s\n",__func__, __LINE__,candidate->external_ap.ssid);
             break;
         }
     }

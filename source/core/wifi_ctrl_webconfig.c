@@ -994,11 +994,15 @@ int webconfig_hal_vap_apply_by_name(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old", tgt_vap_index, &mgr_vap_info->u.sta_info.security);
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New", tgt_vap_index, &vap_info->u.sta_info.security);
                 }
+                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old 1 ", tgt_vap_index, &mgr_vap_info->u.sta_info.security);
+                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New 1 ", tgt_vap_index, &vap_info->u.sta_info.security);
             } else {
                 if (memcmp(&mgr_vap_info->u.bss_info.security, &vap_info->u.bss_info.security, sizeof(wifi_vap_security_t))) {
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old", tgt_vap_index, &mgr_vap_info->u.bss_info.security);
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New", tgt_vap_index, &vap_info->u.bss_info.security);
                 }
+                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old 2 ", tgt_vap_index, &mgr_vap_info->u.bss_info.security);
+                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New 3 ", tgt_vap_index, &vap_info->u.bss_info.security);
 #ifdef FEATURE_SUPPORT_WPS
                 if (memcmp(&mgr_vap_info->u.bss_info.wps, &vap_info->u.bss_info.wps, sizeof(wifi_wps_t))) {
                     print_wifi_hal_vap_wps_data(WIFI_WEBCONFIG, "Old", tgt_vap_index, &mgr_vap_info->u.bss_info.wps);
@@ -3093,7 +3097,7 @@ static void create_station_with_private_credentials(webconfig_subdoc_data_t *dat
 
             data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index]
             .u.sta_info.security.u.radius.eap_type = WIFI_EAP_TYPE_NONE;
-
+            
             data->u.decoded.radios[radio_index].vaps.vap_map.vap_array[vap_array_index]
             .u.sta_info.enabled = true;
 
