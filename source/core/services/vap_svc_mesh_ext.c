@@ -823,6 +823,7 @@ static void reset_sta_state(vap_svc_t *svc, unsigned int vap_index)
         }
     }
 }
+
 #define TARGET_MESH_SSID_5G "MESH_STA_TEST_5G"
 #define TARGET_MESH_SSID_2G "MESH_STA_TEST_2G"
 void ext_try_connecting(vap_svc_t *svc)
@@ -859,7 +860,7 @@ void ext_try_connecting(vap_svc_t *svc)
 
     if (candidate == NULL) {
         wifi_util_info_print(WIFI_CTRL,"%s:%d SSID:%s not found in scan list, skipping connect\n",
-        __func__, __LINE__, TARGET_MESH_SSID);
+        __func__, __LINE__, candidate->external_ap.ssid);
 
         ext_set_conn_state(ext,connection_state_disconnected_scan_list_none,__func__, __LINE__);
         schedule_connect_sm(svc);
@@ -913,7 +914,19 @@ void ext_try_connecting(vap_svc_t *svc)
 
     ctrl = svc->ctrl;
     ext = &svc->u.ext;
+#ifdef ONEWIFI_MULTIAP_APP_SUPPORT
 
+    if (ctrl->multiap_sta_enabled == true){
+        unsigned int num_radio = getNumberRadios();// say num_radio = 3
+        for (unsigned int radio_index = 0; radio_index < num_radio; radio_index++) {
+                vap_index = get_sta_vap_index_for_radio(svc->prop, radio_index);
+                
+
+        }
+
+    }
+
+#else
     if (ext->conn_state == connection_state_connection_to_nb_in_progress) {
         candidate = &ext->new_bss;
         candidate->conn_retry_attempt++;
@@ -967,17 +980,17 @@ void ext_try_connecting(vap_svc_t *svc)
         assert((ext->conn_state != connection_state_connection_in_progress) ||
         (ext->conn_state != connection_state_connection_to_lcb_in_progress));
     }
-
+#endif 
     if (found_at_least_one_candidate == true) {
-
+#ifndef ONEWIFI_MULTIAP_APP_SUPPORT
         if (candidate != NULL) {
             convert_freq_band_to_radio_index(candidate->radio_freq_band, (int *)&radio_index);
         } else {
             wifi_util_dbg_print(WIFI_CTRL, "%s:%d: candidate param NULL\n", __func__, __LINE__);
+            return;
         }
-
         vap_index = get_sta_vap_index_for_radio(svc->prop, radio_index);
-
+#endif
         wifi_util_info_print(WIFI_CTRL,"%s:%d connecting to ssid:%s bssid:%s rssi:%d frequency:%d on vap:%d radio:%d\n",
                     __func__, __LINE__, candidate->external_ap.ssid,
                     to_mac_str(candidate->external_ap.bssid, bssid_str), candidate->external_ap.rssi,
