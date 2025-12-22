@@ -1602,7 +1602,7 @@ webconfig_error_t encode_scan_params_object(const wifi_scan_params_t *scan_info,
 
 webconfig_error_t encode_mesh_sta_object(const wifi_vap_info_t *vap_info,
     const rdk_wifi_vap_info_t *rdk_vap_info, cJSON *vap_obj)
-{
+{ 
     cJSON *obj;
     char mac_str[32];
 
@@ -1654,6 +1654,12 @@ webconfig_error_t encode_mesh_sta_object(const wifi_vap_info_t *vap_info,
     if (encode_security_object(&vap_info->u.sta_info.security, obj, is_6g, vap_info->vap_mode) != webconfig_error_none) {
         wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d Security object encode failed for %s\n",__FUNCTION__, __LINE__, vap_info->vap_name);
         return webconfig_error_encode;
+    }
+    
+    // ForceApply
+    if (rdk_vap_info->force_apply == true) {
+        //Add only if ForceApply is true
+        cJSON_AddBoolToObject(vap_obj, "ForceApply", rdk_vap_info->force_apply);
     }
 
     // Scan Parameters
