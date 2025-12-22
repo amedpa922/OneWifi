@@ -622,6 +622,7 @@ void vap_param_config_changed_event_logging(wifi_vap_info_t *old, wifi_vap_info_
                 OneWifiEventTrace(("RDK_LOG_NOTICE, Wifi VAP Changed to UP\n"));
             }
             if (IS_STR_CHANGED(old->u.bss_info.ssid, new->u.bss_info.ssid,sizeof(old->u.bss_info.ssid))) {
+                wifi_util_info_print(WIFI_CTRL, "%s:%d SSID Changed.\n", __func__, __LINE__);
                 OneWifiEventTrace(("RDK_LOG_NOTICE, SSID Changed \n"));
             }
             if (IS_STR_CHANGED(old->u.bss_info.security.u.key.key, new->u.bss_info.security.u.key.key,sizeof(old->u.bss_info.security.u.key.key))) {
@@ -973,6 +974,7 @@ int webconfig_hal_vap_apply_by_name(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
         // Ignore exists flag change because STA interfaces always enabled in HAL. This allows to
         // avoid redundant reconfiguration with STA disconnection.
         // For pods, STA is just like any other AP interface, deletion is allowed.
+        wifi_util_dbg_print(WIFI_CTRL,"%s:%d: tgt_vap_index: %d \n", __func__, __LINE__,tgt_vap_index);
         if (isVapSTAMesh(tgt_vap_index)) {
             mgr_rdk_vap_info->exists = rdk_vap_info->exists;
         }
@@ -984,25 +986,27 @@ int webconfig_hal_vap_apply_by_name(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
             wifi_util_info_print(WIFI_CTRL, "%s:%d: Change detected in received vap config, applying new configuration for vap: %s\n",
                                 __func__, __LINE__, vap_names[i]);
             vap_param_config_changed_event_logging(mgr_vap_info,vap_info,radio->name,&radio->oper);
-            print_wifi_hal_bss_vap_data(WIFI_WEBCONFIG, "Old", tgt_vap_index, mgr_vap_info,
+            print_wifi_hal_bss_vap_data(WIFI_CTRL, "Old params", tgt_vap_index, mgr_vap_info,
                 mgr_rdk_vap_info);
-            print_wifi_hal_bss_vap_data(WIFI_WEBCONFIG, "New", tgt_vap_index, vap_info,
+            print_wifi_hal_bss_vap_data(WIFI_CTRL, "New params", tgt_vap_index, vap_info,
                 rdk_vap_info);
 
             if (isVapSTAMesh(tgt_vap_index)) {
+                wifi_util_info_print(WIFI_CTRL,"%s:%d: Vap STA is mesh.\n", __func__, __LINE__);
                 if (memcmp(&mgr_vap_info->u.sta_info.security, &vap_info->u.sta_info.security, sizeof(wifi_vap_security_t))) {
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old", tgt_vap_index, &mgr_vap_info->u.sta_info.security);
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New", tgt_vap_index, &vap_info->u.sta_info.security);
                 }
-                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old 1 ", tgt_vap_index, &mgr_vap_info->u.sta_info.security);
-                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New 1 ", tgt_vap_index, &vap_info->u.sta_info.security);
+                print_wifi_hal_vap_security_param(WIFI_CTRL, "Old 1 ", tgt_vap_index, &mgr_vap_info->u.sta_info.security);
+                print_wifi_hal_vap_security_param(WIFI_CTRL, "New 1 ", tgt_vap_index, &vap_info->u.sta_info.security);
             } else {
+                wifi_util_info_print(WIFI_CTRL,"%s:%d: Vap STA not mesh.\n", __func__, __LINE__);
                 if (memcmp(&mgr_vap_info->u.bss_info.security, &vap_info->u.bss_info.security, sizeof(wifi_vap_security_t))) {
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old", tgt_vap_index, &mgr_vap_info->u.bss_info.security);
                     print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New", tgt_vap_index, &vap_info->u.bss_info.security);
                 }
-                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "Old 2 ", tgt_vap_index, &mgr_vap_info->u.bss_info.security);
-                print_wifi_hal_vap_security_param(WIFI_WEBCONFIG, "New 3 ", tgt_vap_index, &vap_info->u.bss_info.security);
+                print_wifi_hal_vap_security_param(WIFI_CTRL, "Old 2 ", tgt_vap_index, &mgr_vap_info->u.bss_info.security);
+                print_wifi_hal_vap_security_param(WIFI_CTRL, "New 2 ", tgt_vap_index, &vap_info->u.bss_info.security);
 #ifdef FEATURE_SUPPORT_WPS
                 if (memcmp(&mgr_vap_info->u.bss_info.wps, &vap_info->u.bss_info.wps, sizeof(wifi_wps_t))) {
                     print_wifi_hal_vap_wps_data(WIFI_WEBCONFIG, "Old", tgt_vap_index, &mgr_vap_info->u.bss_info.wps);
@@ -1020,13 +1024,19 @@ int webconfig_hal_vap_apply_by_name(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
             p_tgt_vap_map->num_vaps = 1;
 
             memcpy(&p_tgt_vap_map->vap_array[0], vap_info, sizeof(wifi_vap_info_t));
+            wifi_vap_info_t *ptr_vap_info = &p_tgt_vap_map->vap_array[0];
+            wifi_util_info_print(WIFI_CTRL, "%s:%d: vap_name: %s; vap_index: %d; radio_index: %d\n",
+            __func__, __LINE__,ptr_vap_info->vap_name,ptr_vap_info->vap_index,ptr_vap_info->radio_index);
+
             memset(&tgt_rdk_vap_info, 0, sizeof(rdk_wifi_vap_info_t));
             memcpy(&tgt_rdk_vap_info, rdk_vap_info, sizeof(rdk_wifi_vap_info_t));
-
+            wifi_util_info_print(WIFI_CTRL, "%s:%d: vap_name: %s; vap_index: %d\n",
+            __func__, __LINE__,tgt_rdk_vap_info.vap_name,tgt_rdk_vap_info.vap_index);
+            
             start_wifi_sched_timer(vap_info->vap_index, ctrl, wifi_vap_sched);
-
+            wifi_util_info_print(WIFI_CTRL, "%s:%d:update_fn() and tgt_radio_idx: %d.\n", __func__, __LINE__,tgt_radio_idx);
             if (svc->update_fn(svc, tgt_radio_idx, p_tgt_vap_map, &tgt_rdk_vap_info) != RETURN_OK) {
-                wifi_util_error_print(WIFI_WEBCONFIG, "%s:%d: failed to apply\n", __func__, __LINE__);
+                wifi_util_error_print(WIFI_CTRL, "%s:%d: failed to apply\n", __func__, __LINE__);
                 memset(update_status, 0, sizeof(update_status));
                 snprintf(update_status, sizeof(update_status), "%s %s", vap_names[i], "fail");
                 apps_mgr_analytics_event(&ctrl->apps_mgr, wifi_event_type_webconfig, wifi_event_webconfig_hal_result, update_status);
@@ -1067,7 +1077,7 @@ int webconfig_hal_vap_apply_by_name(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
             free(p_tgt_vap_map);
 
         } else {
-            wifi_util_info_print(WIFI_WEBCONFIG, "%s:%d: Received vap config is same for %s, not applying\n",
+            wifi_util_info_print(WIFI_CTRL, "%s:%d: Received vap config is same for %s, not applying\n",
                         __func__, __LINE__, vap_names[i]);
         }
     }
@@ -1691,7 +1701,7 @@ int webconfig_hal_mesh_sta_vap_apply(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded
             num_vaps++;
         }
     }
-    wifi_util_info_print(WIFI_MGR, "%s:%d IEEE1905 num_vaps = %d.\n", __func__, __LINE__,num_vaps);
+    wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905 num_vaps = %d.\n", __func__, __LINE__,num_vaps);
     return webconfig_hal_vap_apply_by_name(ctrl, data, vap_names, num_vaps);
 }
 
@@ -2632,6 +2642,7 @@ webconfig_error_t webconfig_ctrl_apply(webconfig_subdoc_t *doc, webconfig_subdoc
                 } else {
                     ctrl->webconfig_state |= ctrl_webconfig_state_vap_mesh_sta_cfg_rsp_pending;
                     webconfig_analytic_event_data_to_hal_apply(data);
+                    wifi_util_info_print(WIFI_CTRL, "%s:%d: webconfig_subdoc_type_mesh_sta.\n", __func__, __LINE__);
                     ret = webconfig_hal_mesh_sta_vap_apply(ctrl, &data->u.decoded);
                     is_sta_set = true;
                 }

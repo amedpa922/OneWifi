@@ -327,7 +327,6 @@ void ctrl_queue_loop(wifi_ctrl_t *ctrl)
                     continue;
                 }
                 pthread_mutex_unlock(&ctrl->queue_lock);
-                wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 event_type = %d\n",__FUNCTION__, event->event_type);
                 switch (event->event_type) {
                     case wifi_event_type_webconfig:
                         wifi_util_info_print(WIFI_CTRL,"[%s]: IEEE1905 wifi_event_type_webconfig.\n",__FUNCTION__);

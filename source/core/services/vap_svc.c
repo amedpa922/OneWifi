@@ -325,6 +325,8 @@ vap_svc_t *get_svc_by_type(wifi_ctrl_t *ct, vap_svc_type_t type)
 
     for (i = 0; i < vap_svc_type_max; i++) {
         if (ctrl->ctrl_svc[i].type == type) {
+            wifi_util_info_print(WIFI_CTRL, "%s:%d IEEE1905: TYPE: %d.\n",
+            __func__, __LINE__,ctrl->ctrl_svc[i].type);
             return &ctrl->ctrl_svc[i];
         }
     }

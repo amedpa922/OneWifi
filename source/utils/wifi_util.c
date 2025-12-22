@@ -3884,7 +3884,7 @@ bool is_vap_param_config_changed(wifi_vap_info_t *vap_info_old, wifi_vap_info_t 
 
     if ((vap_info_old == NULL) || (vap_info_new == NULL) || (rdk_old == NULL) ||
         (rdk_new == NULL)) {
-        wifi_util_error_print(WIFI_WEBCONFIG,
+        wifi_util_info_print(WIFI_CTRL,
             "%s:%d: input args are NULL vap_info_old : %p vap_info_new : %p rdk_old : %p rdk_new : "
             "%p\n",
             __func__, __LINE__, vap_info_old, vap_info_new, rdk_old, rdk_new);
@@ -3892,6 +3892,7 @@ bool is_vap_param_config_changed(wifi_vap_info_t *vap_info_old, wifi_vap_info_t 
     }
 
     if (IS_CHANGED(rdk_old->exists, rdk_new->exists)) {
+        wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: 1 \n",__func__, __LINE__);
         return true;
     }
 
@@ -3903,6 +3904,7 @@ bool is_vap_param_config_changed(wifi_vap_info_t *vap_info_old, wifi_vap_info_t 
         IS_STR_CHANGED(vap_info_old->repurposed_bridge_name, vap_info_new->repurposed_bridge_name,
             sizeof(vap_info_old->repurposed_bridge_name)) ||
         IS_CHANGED(vap_info_old->vap_mode, vap_info_new->vap_mode)) {
+             wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: 2 \n",__func__, __LINE__);
         return true;
     }
 
@@ -3914,6 +3916,7 @@ bool is_vap_param_config_changed(wifi_vap_info_t *vap_info_old, wifi_vap_info_t 
             IS_CHANGED(vap_info_old->u.sta_info.enabled, vap_info_new->u.sta_info.enabled) ||
             IS_BIN_CHANGED(&vap_info_old->u.sta_info.security, &vap_info_new->u.sta_info.security,
                 sizeof(wifi_vap_security_t))) {
+                     wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: 3 \n",__func__, __LINE__);
             return true;
         }
     } else {
@@ -3995,6 +3998,7 @@ bool is_vap_param_config_changed(wifi_vap_info_t *vap_info_old, wifi_vap_info_t 
             IS_BIN_CHANGED(vap_info_old->u.bss_info.vendor_elements,
                 vap_info_new->u.bss_info.vendor_elements,
                 sizeof(vap_info_old->u.bss_info.vendor_elements))) {
+                     wifi_util_info_print(WIFI_CTRL,"%s:%d: IEEE1905: 4 \n",__func__, __LINE__);
             return true;
         }
     }
