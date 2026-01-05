@@ -1024,13 +1024,13 @@ int webconfig_hal_vap_apply_by_name(wifi_ctrl_t *ctrl, webconfig_subdoc_decoded_
 
             memcpy(&p_tgt_vap_map->vap_array[0], vap_info, sizeof(wifi_vap_info_t));
             wifi_vap_info_t *ptr_vap_info = &p_tgt_vap_map->vap_array[0];
-+           wifi_util_info_print(WIFI_CTRL, "%s:%d: vap_name: %s; vap_index: %d; radio_index: %d\n",
-+           __func__, __LINE__,ptr_vap_info->vap_name,ptr_vap_info->vap_index,ptr_vap_info->radio_index);
+            wifi_util_info_print(WIFI_CTRL, "%s:%d: vap_name: %s; vap_index: %d; radio_index: %d\n",
+            __func__, __LINE__,ptr_vap_info->vap_name,ptr_vap_info->vap_index,ptr_vap_info->radio_index);
 
             memset(&tgt_rdk_vap_info, 0, sizeof(rdk_wifi_vap_info_t));
             memcpy(&tgt_rdk_vap_info, rdk_vap_info, sizeof(rdk_wifi_vap_info_t));
             wifi_util_info_print(WIFI_CTRL, "%s:%d: vap_name: %s; vap_index: %d\n",
-+            __func__, __LINE__,tgt_rdk_vap_info.vap_name,tgt_rdk_vap_info.vap_index);
+            __func__, __LINE__,tgt_rdk_vap_info.vap_name,tgt_rdk_vap_info.vap_index);
 
             start_wifi_sched_timer(vap_info->vap_index, ctrl, wifi_vap_sched);
             wifi_util_info_print(WIFI_CTRL, "%s:%d:update_fn() and tgt_radio_idx: %d.\n", __func__, __LINE__,tgt_radio_idx);
