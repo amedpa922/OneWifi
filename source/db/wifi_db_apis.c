@@ -87,7 +87,7 @@
 #define DEFAULT_WHIX_CHUTILITY_LOGINTERVAL 900
 #define DEFAULT_WHIX_LOGINTERVAL 3600
 #define ONEWIFI_DB_VERSION_UPDATE_MLD_FLAG 100042
-#define ONEWIFI_DB_VERSION_WPA3_T_DISABLE_FLAG 100043
+#define ONEWIFI_DB_VERSION_WPA3_T_DISABLE_FLAG 100044
 
 ovsdb_table_t table_Wifi_Radio_Config;
 ovsdb_table_t table_Wifi_VAP_Config;
@@ -230,11 +230,11 @@ void callback_Wifi_Rfc_Config(ovsdb_update_monitor_t *mon, struct schema_Wifi_Rf
     }
 
     if (mon->mon_type == OVSDB_UPDATE_DEL) {
-        wifi_util_dbg_print(WIFI_DB, "%s:%d:Delete\n", __func__, __LINE__);
+        wifi_util_info_print(WIFI_DB, "%s:%d:Delete\n", __func__, __LINE__);
     } else if ((mon->mon_type == OVSDB_UPDATE_NEW) || (mon->mon_type == OVSDB_UPDATE_MODIFY)) {
 
-        wifi_util_dbg_print(WIFI_DB, "%s:%d:RFC Config New/Modify \n", __func__, __LINE__);
-        wifi_util_dbg_print(WIFI_DB,"%s:%d:%d _Wifi_Rfc_Config table.\n", __func__, __LINE__,new_rec->multiap_rfc);
+        wifi_util_info_print(WIFI_DB, "%s:%d:RFC Config New/Modify \n", __func__, __LINE__);
+        wifi_util_info_print(WIFI_DB,"%s:%d:%d _Wifi_Rfc_Config table.\n", __func__, __LINE__,new_rec->multiap_rfc);
         pthread_mutex_lock(&g_wifidb->data_cache_lock);
         strcpy(rfc_param->rfc_id, new_rec->rfc_id);
         rfc_param->wifipasspoint_rfc = new_rec->wifipasspoint_rfc;
@@ -1868,6 +1868,7 @@ int wifidb_get_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_info)
     sprintf(index,"%d",rfc_id);
     where = onewifi_ovsdb_tran_cond(OCLM_STR, "rfc_id", OFUNC_EQ, index);
     pcfg = onewifi_ovsdb_table_select_where(g_wifidb->wifidb_sock_path, &table_Wifi_Rfc_Config, where, &count);
+    wifi_util_info_print(WIFI_DB,"%s:%d: IEEE1905.\n", __func__, __LINE__);
     if (pcfg == NULL) {
         wifidb_print("%s:%d Table table_Wifi_Rfc_Config not found entry count=%d\n",__func__, __LINE__, count);
         return -1;
@@ -1897,6 +1898,7 @@ int wifidb_get_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_info)
     rfc_info->wpa3_compatibility_enable = pcfg->wpa3_compatibility_enable;
     rfc_info->csi_analytics_enabled_rfc = pcfg->csi_analytics_enabled_rfc;
     rfc_info->multiap_rfc = pcfg->multiap_rfc;
+    wifi_util_info_print(WIFI_DB,"%s:%d: IEEE1905 multiap_rfc=%d.\n", __func__, __LINE__,rfc_info->multiap_rfc);
     free(pcfg);
     return 0;
 }
@@ -4567,7 +4569,7 @@ void wifidb_init_rfc_config_default(wifi_rfc_dml_parameters_t *config)
     wifi_rfc_dml_parameters_t rfc_config = {0};
     wifi_mgr_t *g_wifidb;
     g_wifidb = get_wifimgr_obj();
-
+    wifi_util_info_print(WIFI_DB,"%s:%d: IEEE1905\n",__func__, __LINE__);
     rfc_config.wifipasspoint_rfc = false;
     rfc_config.wifiinterworking_rfc = false;
     rfc_config.radiusgreylist_rfc = false;
@@ -4598,6 +4600,7 @@ void wifidb_init_rfc_config_default(wifi_rfc_dml_parameters_t *config)
     rfc_config.wpa3_compatibility_enable = false;
     rfc_config.csi_analytics_enabled_rfc = false;
     rfc_config.multiap_rfc = false;
+    wifi_util_info_print(WIFI_DB,"%s:%d: IEEE1905 default setting rfc_config.multiap_rfc=%d.\n",__func__, __LINE__,rfc_config.multiap_rfc);
     pthread_mutex_lock(&g_wifidb->data_cache_lock);
     memcpy(config,&rfc_config,sizeof(wifi_rfc_dml_parameters_t));
     pthread_mutex_unlock(&g_wifidb->data_cache_lock);
@@ -5925,7 +5928,7 @@ int wifidb_update_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_param)
     where = onewifi_ovsdb_tran_cond(OCLM_STR, "rfc_id", OFUNC_EQ, index);
     pcfg = onewifi_ovsdb_table_select_where(g_wifidb->wifidb_sock_path, &table_Wifi_Rfc_Config, where, &count);
     if ((count != 0) && (pcfg != NULL)) {
-        wifidb_print("%s:%d Updated WIFI DB. Found %d records with key: %d in Wifi RFCConfig table \n",__func__, __LINE__, count, rfc_id);
+        wifi_util_info_print(WIFI_DB,"%s:%d Updated WIFI DB. Found %d records with key: %d in Wifi RFCConfig table \n",__func__, __LINE__, count, rfc_id);
         memcpy(&cfg, pcfg, sizeof(struct schema_Wifi_Rfc_Config));
         update = true;
         free(pcfg);
@@ -5955,12 +5958,12 @@ int wifidb_update_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_param)
         where = onewifi_ovsdb_tran_cond(OCLM_STR, "rfc_id", OFUNC_EQ, index); 
         ret = onewifi_ovsdb_table_update_where(g_wifidb->wifidb_sock_path, &table_Wifi_Rfc_Config, where, &cfg);
         if (ret == -1) {
-            wifidb_print("%s:%d WIFI DB update error !!!. Failed to update Wifi Rfc Config table \n",__func__, __LINE__);
+            wifi_util_info_print(WIFI_DB,"%s:%d WIFI DB update error !!!. Failed to update Wifi Rfc Config table \n",__func__, __LINE__);
             return -1;
         } else if (ret == 0) {
             wifi_util_dbg_print(WIFI_DB,"%s:%d: nothing to update table_Wifi_Rfc_Config table\n", __func__, __LINE__);
         } else {
-            wifidb_print("%s:%d Updated WIFI DB. Wifi Rfc Config table updated successful. \n",__func__, __LINE__);
+            wifi_util_info_print(WIFI_DB,"%s:%d Updated WIFI DB. Wifi Rfc Config table updated successful. \n",__func__, __LINE__);
         }
     } else {
         strcpy(cfg.rfc_id,index);
@@ -5968,10 +5971,10 @@ int wifidb_update_rfc_config(UINT rfc_id, wifi_rfc_dml_parameters_t *rfc_param)
                                   SCHEMA_COLUMN(Wifi_Rfc_Config, rfc_id),
                                   cfg.rfc_id,
                                   &cfg, NULL) == false) {
-            wifidb_print("%s:%d WIFI DB update error !!!. Failed to insert in table_Wifi_RFC_config \n",__func__, __LINE__);
+            wifi_util_info_print(WIFI_DB,"%s:%d WIFI DB update error !!!. Failed to insert in table_Wifi_RFC_config \n",__func__, __LINE__);
             return -1;
         } else {
-            wifidb_print("%s:%d Updated WIFI DB. Insert in table_Wifi_RFC_Config table successful \n",__func__, __LINE__);
+            wifi_util_info_print(WIFI_DB,"%s:%d Updated WIFI DB. Insert in table_Wifi_RFC_Config table successful \n",__func__, __LINE__);
         }
     }
     return 0;
