@@ -170,7 +170,8 @@ int multiap_event_exec_start(wifi_app_t *apps, void *arg)
     }
 
     ctrl->multiap_sta_enabled = true;
-    //receive_multiap_message();
+    // as device is GW, then Rx Packates
+    receive_multiap_message();
     //start the station vaps only if none of the station is connected to vaps because in XLE when its in GW mode(with WAN failover) 
     // stations are connected to the GW then we should not start the station vaps
     wifi_util_info_print(WIFI_CTRL,"%s:%d IEEE1905: calling start_station_vaps().\n",__func__,__LINE__);
@@ -204,7 +205,7 @@ int multiap_event_exec_timeout(wifi_app_t *apps, void *arg)
     return RETURN_OK;
 }
 
-int handle_autoconf_search (unsigned char *data, unsigned int len)
+int handle_autoconf_search(unsigned char *data, unsigned int len)
 {
     unsigned char msg[MAX_BUFF_SZ];
     wifi_util_error_print(WIFI_CTRL,"Enter %s:%d\n",__func__,__LINE__);
@@ -756,7 +757,8 @@ void proto_process(unsigned char *data, unsigned int len)
 }
 static void *receive_multicast_message(void *ctx)
 {
-    const char *ifaces[MAX_IFACES] = { "wl1.1" , "wl1" ,"wl0.1", "wl0", "brlan0", "wl1.7", "brlan1","wl0.7"};
+    //const char *ifaces[MAX_IFACES] = { "wl1.1" , "wl1" ,"wl0.1", "wl0", "brlan0", "wl1.7", "brlan1","wl0.7"};
+    const char *ifaces[MAX_IFACES] = {"wl1" , "wl0" , "brlan0"};
     int sockets[MAX_IFACES];
     char buffer[BUF_SIZE];
     state = multiap_state_none;
